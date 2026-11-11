@@ -44,7 +44,7 @@ export const Navbar: React.FC = () => {
           className="flex items-center gap-2 group cursor-pointer focus:outline-none whitespace-nowrap shrink-0"
         >
           <span className="text-xl font-display font-extrabold tracking-tight text-white group-hover:text-indigo-400 transition-colors">
-            My Backlog
+            Gamelog
           </span>
         </button>
 

@@ -43,7 +43,7 @@ const MainApp: React.FC = () => {
       <footer className="mt-auto border-t border-white/5 bg-[#0a0d14] py-8 text-center text-xs text-slate-500">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <span className="font-display font-bold text-slate-300">Backloggd Tracker</span>
+            <span className="font-display font-bold text-slate-300">Gamelog</span>
             <span aria-hidden="true">·</span>
             <span>Perfil de Leonio Ranulfo</span>
           </div>

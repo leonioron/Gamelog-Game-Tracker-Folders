@@ -1,6 +1,6 @@
-# Backloggd Tracker — Gerenciador de Backlog, Pastas & Listas de Jogos
+# Gamelog — Gerenciador de Backlog, Pastas & Listas de Jogos
 
-Uma aplicação web completa e moderna inspirada na estética e funcionalidades do [Backloggd](https://www.backloggd.com/), desenvolvida para organizar, catalogar e acompanhar todo o seu histórico de jogos em uma hierarquia elegante:
+**Gamelog** é uma aplicação web completa e moderna inspirada na estética e funcionalidades do [Backloggd](https://www.backloggd.com/), desenvolvida para organizar, catalogar e acompanhar todo o seu histórico de jogos em uma hierarquia elegante:
 
 $$\text{Pasta} \longrightarrow \text{Lista de Jogos} \longrightarrow \text{Jogos}$$
 
