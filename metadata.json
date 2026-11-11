@@ -1,0 +1,6 @@
+{
+  "name": "Backloggd Leonio - Game Tracker & Folders",
+  "description": "Organizador de backlog de jogos inspirado no Backloggd com suporte a Pastas, Listas e Jogos, avaliações, resenhas e diário de jogatina.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

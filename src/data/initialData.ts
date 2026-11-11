@@ -1,0 +1,828 @@
+import { Game, Folder, GameList, UserGameStatus, GameLog, UserProfile } from '../types';
+
+export const INITIAL_GAMES: Game[] = [
+  {
+    id: 'elden-ring',
+    title: 'Elden Ring',
+    coverUrl: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1245620/library_600x900_2x.jpg',
+    releaseYear: 2022,
+    genres: ['Action RPG', 'Open World', 'Dark Fantasy'],
+    platforms: ['PC', 'PlayStation 5', 'Xbox Series X/S', 'PS4'],
+    developer: 'FromSoftware',
+    summary: 'The Golden Order has been broken. Rise, Tarnished, and be guided by grace to brandish the power of the Elden Ring and become an Elden Lord in the Lands Between.'
+  },
+  {
+    id: 'baldirs-gate-3',
+    title: "Baldur's Gate 3",
+    coverUrl: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1086940/library_600x900_2x.jpg',
+    releaseYear: 2023,
+    genres: ['RPG', 'Turn-Based', 'Fantasy'],
+    platforms: ['PC', 'PlayStation 5', 'Xbox Series X/S'],
+    developer: 'Larian Studios',
+    summary: 'Gather your party and return to the Forgotten Realms in a tale of fellowship and betrayal, sacrifice and survival, and the lure of absolute power.'
+  },
+  {
+    id: 'resident-evil-4-remake',
+    title: 'Resident Evil 4 (Remake)',
+    coverUrl: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2050650/library_600x900_2x.jpg',
+    releaseYear: 2023,
+    genres: ['Survival Horror', 'Action'],
+    platforms: ['PC', 'PlayStation 5', 'Xbox Series X/S', 'PS4'],
+    developer: 'Capcom',
+    summary: 'Survival is only the beginning. Six years have passed since the disaster in Raccoon City. Leon S. Kennedy tracks the presidents missing daughter to a secluded European village.'
+  },
+  {
+    id: 'resident-evil-2-remake',
+    title: 'Resident Evil 2 (Remake)',
+    coverUrl: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/883710/library_600x900_2x.jpg',
+    releaseYear: 2019,
+    genres: ['Survival Horror', 'Action'],
+    platforms: ['PC', 'PlayStation 5', 'Xbox Series X/S', 'PS4', 'Xbox One'],
+    developer: 'Capcom',
+    summary: 'A deadly virus engulfs the residents of Raccoon City in September of 1998, plunging the town into chaos as flesh eating zombies roam the streets.'
+  },
+  {
+    id: 'resident-evil-village',
+    title: 'Resident Evil Village',
+    coverUrl: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1196590/library_600x900_2x.jpg',
+    releaseYear: 2021,
+    genres: ['Survival Horror', 'First-Person'],
+    platforms: ['PC', 'PlayStation 5', 'Xbox Series X/S', 'PS4', 'Xbox One'],
+    developer: 'Capcom',
+    summary: 'Experience survival horror like never before in Resident Evil Village. Years after the tragic events of RE7, Ethan Winters seeks answers in a mysterious snowy village.'
+  },
+  {
+    id: 'resident-evil-7',
+    title: 'Resident Evil 7: Biohazard',
+    coverUrl: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/418370/library_600x900_2x.jpg',
+    releaseYear: 2017,
+    genres: ['Survival Horror', 'First-Person'],
+    platforms: ['PC', 'PlayStation 5', 'Xbox Series X/S', 'PS4', 'Xbox One'],
+    developer: 'Capcom',
+    summary: 'Menace and desperation pulse through the decaying walls of an abandoned southern farmhouse. RE7 marks a dramatic shift to an intense first-person perspective.'
+  },
+  {
+    id: 'the-witcher-3',
+    title: 'The Witcher 3: Wild Hunt',
+    coverUrl: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/292030/library_600x900_2x.jpg',
+    releaseYear: 2015,
+    genres: ['RPG', 'Open World', 'Dark Fantasy'],
+    platforms: ['PC', 'PlayStation 5', 'Xbox Series X/S', 'Switch', 'PS4', 'Xbox One'],
+    developer: 'CD Projekt RED',
+    summary: 'You are Geralt of Rivia, mercenary monster slayer. Before you stands a war-torn, monster-infested continent you can explore at will.'
+  },
+  {
+    id: 'cyberpunk-2077',
+    title: 'Cyberpunk 2077',
+    coverUrl: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1091500/library_600x900_2x.jpg',
+    releaseYear: 2020,
+    genres: ['Action RPG', 'Open World', 'Cyberpunk'],
+    platforms: ['PC', 'PlayStation 5', 'Xbox Series X/S', 'PS4', 'Xbox One'],
+    developer: 'CD Projekt RED',
+    summary: 'An open-world, action-adventure RPG set in the megalopolis of Night City, where you play as a cyberpunk mercenary wrapped in a do-or-die fight for survival.'
+  },
+  {
+    id: 'hollow-knight',
+    title: 'Hollow Knight',
+    coverUrl: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/367520/library_600x900_2x.jpg',
+    releaseYear: 2017,
+    genres: ['Metroidvania', 'Souls-like', 'Indie'],
+    platforms: ['PC', 'Nintendo Switch', 'PS4', 'Xbox One'],
+    developer: 'Team Cherry',
+    summary: 'Forge your own path in Hollow Knight! An epic action adventure through a vast ruined kingdom of insects and heroes. Explore twisting caverns and battle tainted creatures.'
+  },
+  {
+    id: 'hades',
+    title: 'Hades',
+    coverUrl: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1145360/library_600x900_2x.jpg',
+    releaseYear: 2020,
+    genres: ['Roguelike', 'Action', 'Indie'],
+    platforms: ['PC', 'Nintendo Switch', 'PS5', 'Xbox Series X/S', 'PS4'],
+    developer: 'Supergiant Games',
+    summary: 'Defy the god of the dead as you hack and slash out of the Underworld in this rogue-like dungeon crawler from the creators of Bastion and Transistor.'
+  },
+  {
+    id: 'hades-2',
+    title: 'Hades II',
+    coverUrl: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1145350/library_600x900_2x.jpg',
+    releaseYear: 2024,
+    genres: ['Roguelike', 'Action', 'Mythology'],
+    platforms: ['PC'],
+    developer: 'Supergiant Games',
+    summary: 'Battle beyond the Underworld using dark sorcery to take on the Titan of Time in this bewitching sequel to the award-winning rogue-like dungeon crawler.'
+  },
+  {
+    id: 'sekiro',
+    title: 'Sekiro: Shadows Die Twice',
+    coverUrl: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/814380/library_600x900_2x.jpg',
+    releaseYear: 2019,
+    genres: ['Action', 'Souls-like', 'Stealth'],
+    platforms: ['PC', 'PS4', 'Xbox One'],
+    developer: 'FromSoftware',
+    summary: 'Carve your own clever path to vengeance in the critically acclaimed adventure from developer FromSoftware, creators of Bloodborne and the Dark Souls series.'
+  },
+  {
+    id: 'dark-souls-3',
+    title: 'Dark Souls III',
+    coverUrl: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/374320/library_600x900_2x.jpg',
+    releaseYear: 2016,
+    genres: ['Action RPG', 'Dark Fantasy', 'Souls-like'],
+    platforms: ['PC', 'PS4', 'Xbox One'],
+    developer: 'FromSoftware',
+    summary: 'As fires fade and the world falls into ruin, journey into a universe filled with more colossal enemies and environments. Immersive gameplay with faster combat.'
+  },
+  {
+    id: 'bloodborne',
+    title: 'Bloodborne',
+    coverUrl: 'https://images.igdb.com/igdb/image/upload/t_cover_big/co1r7f.webp',
+    releaseYear: 2015,
+    genres: ['Action RPG', 'Lovecraftian', 'Souls-like'],
+    platforms: ['PlayStation 4'],
+    developer: 'FromSoftware',
+    summary: 'Face your fears as you search for answers in the ancient city of Yharnam, now cursed with a strange endemic illness spreading through the streets like wildfire.'
+  },
+  {
+    id: 'persona-5-royal',
+    title: 'Persona 5 Royal',
+    coverUrl: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1687950/library_600x900_2x.jpg',
+    releaseYear: 2019,
+    genres: ['JRPG', 'Turn-Based', 'Anime'],
+    platforms: ['PC', 'PS5', 'Nintendo Switch', 'Xbox Series X/S', 'PS4'],
+    developer: 'Atlus',
+    summary: 'Don the mask of Joker and join the Phantom Thieves of Hearts. Break free from the chains of modern society and stage grand heists to infiltrate the minds of the corrupt.'
+  },
+  {
+    id: 'persona-3-reload',
+    title: 'Persona 3 Reload',
+    coverUrl: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2161700/library_600x900_2x.jpg',
+    releaseYear: 2024,
+    genres: ['JRPG', 'Turn-Based', 'Anime'],
+    platforms: ['PC', 'PS5', 'Xbox Series X/S', 'PS4', 'Xbox One'],
+    developer: 'Atlus',
+    summary: 'Step into the shoes of a transfer student thrust into an unexpected fate when entering the hour hidden between one day and the next. Awaken an incredible power.'
+  },
+  {
+    id: 'chrono-trigger',
+    title: 'Chrono Trigger',
+    coverUrl: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/613830/library_600x900_2x.jpg',
+    releaseYear: 1995,
+    genres: ['JRPG', 'Classic', 'Time Travel'],
+    platforms: ['SNES', 'PC', 'Nintendo DS', 'PlayStation'],
+    developer: 'Square',
+    summary: 'The timeless RPG classic developed by the dream team of Yuji Horii, Akira Toriyama, and Hironobu Sakaguchi. Journey across forgotten eras to save the future.'
+  },
+  {
+    id: 'ffvii-rebirth',
+    title: 'Final Fantasy VII Rebirth',
+    coverUrl: 'https://images.igdb.com/igdb/image/upload/t_cover_big/co6ecc.webp',
+    releaseYear: 2024,
+    genres: ['JRPG', 'Action RPG', 'Fantasy'],
+    platforms: ['PlayStation 5'],
+    developer: 'Square Enix',
+    summary: 'The unknown journey continues. After escaping from the dystopian city of Midgar, Cloud and his friends set out on a journey across the planet.'
+  },
+  {
+    id: 'ffvii-remake',
+    title: 'Final Fantasy VII Remake Intergrade',
+    coverUrl: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1462040/library_600x900_2x.jpg',
+    releaseYear: 2020,
+    genres: ['JRPG', 'Action RPG', 'Sci-Fi'],
+    platforms: ['PC', 'PlayStation 5', 'PlayStation 4'],
+    developer: 'Square Enix',
+    summary: 'Cloud Strife, an ex-SOLDIER operative, descends on Midgar. The world has fallen under the control of the Shinra Electric Power Company.'
+  },
+  {
+    id: 'ff-x',
+    title: 'Final Fantasy X/X-2 HD Remaster',
+    coverUrl: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/359870/library_600x900_2x.jpg',
+    releaseYear: 2001,
+    genres: ['JRPG', 'Turn-Based', 'Fantasy'],
+    platforms: ['PC', 'PS4', 'Nintendo Switch', 'Xbox One', 'PS2'],
+    developer: 'Square',
+    summary: 'Follow Tidus, a star Blitzball player who journeys with a young summoner named Yuna to save the world of Spira from an endless cycle of destruction caused by Sin.'
+  },
+  {
+    id: 'ff-ix',
+    title: 'Final Fantasy IX',
+    coverUrl: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/377840/library_600x900_2x.jpg',
+    releaseYear: 2000,
+    genres: ['JRPG', 'Fantasy', 'Classic'],
+    platforms: ['PlayStation', 'PC', 'Nintendo Switch', 'PS4', 'Xbox One'],
+    developer: 'Square',
+    summary: 'Zidane and the Tantalus Theater Troupe have kidnapped Princess Garnet, the heir of Alexandria. To their surprise, however, the princess herself yearned to escape the castle.'
+  },
+  {
+    id: 'zelda-totk',
+    title: 'The Legend of Zelda: Tears of the Kingdom',
+    coverUrl: 'https://images.igdb.com/igdb/image/upload/t_cover_big/co5vmg.webp',
+    releaseYear: 2023,
+    genres: ['Action-Adventure', 'Open World', 'Fantasy'],
+    platforms: ['Nintendo Switch'],
+    developer: 'Nintendo',
+    summary: 'An epic adventure across the land and skies of Hyrule awaits in The Legend of Zelda: Tears of the Kingdom for Nintendo Switch. Create your own path through the sprawling landscape.'
+  },
+  {
+    id: 'zelda-botw',
+    title: 'The Legend of Zelda: Breath of the Wild',
+    coverUrl: 'https://images.igdb.com/igdb/image/upload/t_cover_big/co1m1f.webp',
+    releaseYear: 2017,
+    genres: ['Action-Adventure', 'Open World', 'Fantasy'],
+    platforms: ['Nintendo Switch', 'Wii U'],
+    developer: 'Nintendo',
+    summary: 'Step into a world of discovery, exploration, and adventure in The Legend of Zelda: Breath of the Wild, a boundary-breaking new game in the acclaimed series.'
+  },
+  {
+    id: 'balatro',
+    title: 'Balatro',
+    coverUrl: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2379780/library_600x900_2x.jpg',
+    releaseYear: 2024,
+    genres: ['Roguelike', 'Deckbuilder', 'Strategy'],
+    platforms: ['PC', 'Nintendo Switch', 'PS5', 'Xbox Series X/S', 'Mobile'],
+    developer: 'LocalThunk',
+    summary: 'Balatro is a poker-inspired roguelike deck builder all about creating powerful synergies and winning big. Combine valid poker hands with unique Joker cards.'
+  },
+  {
+    id: 'slay-the-spire',
+    title: 'Slay the Spire',
+    coverUrl: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/646570/library_600x900_2x.jpg',
+    releaseYear: 2019,
+    genres: ['Roguelike', 'Deckbuilder', 'Turn-Based'],
+    platforms: ['PC', 'Nintendo Switch', 'PS4', 'Xbox One', 'Mobile'],
+    developer: 'Mega Crit Games',
+    summary: 'We fused card games and roguelikes together to make the best single player deckbuilder we could. Craft a unique deck, encounter bizarre creatures, and discover relics of immense power.'
+  },
+  {
+    id: 'outer-wilds',
+    title: 'Outer Wilds',
+    coverUrl: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/753640/library_600x900_2x.jpg',
+    releaseYear: 2019,
+    genres: ['Adventure', 'Mystery', 'Space Exploration'],
+    platforms: ['PC', 'PS5', 'Xbox Series X/S', 'Nintendo Switch', 'PS4'],
+    developer: 'Mobius Digital',
+    summary: 'Named Game of the Year 2019 by Giant Bomb, Polygon, Eurogamer, and The Guardian, Outer Wilds is a critically-acclaimed and award-winning open world mystery about a solar system trapped in a 22-minute time loop.'
+  },
+  {
+    id: 'disco-elysium',
+    title: 'Disco Elysium - The Final Cut',
+    coverUrl: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/632470/library_600x900_2x.jpg',
+    releaseYear: 2019,
+    genres: ['RPG', 'Narrative', 'Detective'],
+    platforms: ['PC', 'PS5', 'Xbox Series X/S', 'Nintendo Switch', 'PS4'],
+    developer: 'ZA/UM',
+    summary: 'Disco Elysium - The Final Cut is the definitive edition of the groundbreaking role playing game. You are a detective with a unique skill system at your disposal and a whole city to carve your path across.'
+  },
+  {
+    id: 'celeste',
+    title: 'Celeste',
+    coverUrl: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/504230/library_600x900_2x.jpg',
+    releaseYear: 2018,
+    genres: ['Platformer', 'Indie', 'Difficult'],
+    platforms: ['PC', 'Nintendo Switch', 'PS4', 'Xbox One'],
+    developer: 'Maddy Makes Games',
+    summary: 'Help Madeline survive her inner demons on her journey to the top of Celeste Mountain, in this super-tight, hand-crafted platformer from the creators of multiplayer classic TowerFall.'
+  },
+  {
+    id: 'lies-of-p',
+    title: 'Lies of P',
+    coverUrl: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1627720/library_600x900_2x.jpg',
+    releaseYear: 2023,
+    genres: ['Souls-like', 'Action RPG', 'Dark Fantasy'],
+    platforms: ['PC', 'PlayStation 5', 'Xbox Series X/S', 'PS4', 'Xbox One'],
+    developer: 'Round8 Studio / Neowiz',
+    summary: 'Lies of P is a thrilling soulslike that takes the story of Pinocchio, turns it on its head, and sets it against the darkly elegant backdrop of the Belle Époque era.'
+  },
+  {
+    id: 'alan-wake-2',
+    title: 'Alan Wake 2',
+    coverUrl: 'https://images.igdb.com/igdb/image/upload/t_cover_big/co670h.webp',
+    releaseYear: 2023,
+    genres: ['Survival Horror', 'Psychological', 'Action'],
+    platforms: ['PC', 'PlayStation 5', 'Xbox Series X/S'],
+    developer: 'Remedy Entertainment',
+    summary: 'Saga Anderson arrives to investigate ritualistic murders in a small town. Alan Wake pens a dark story to shape the reality around him. Two heroes connected in ways they cannot understand.'
+  },
+  {
+    id: 'god-of-war-ragnarok',
+    title: 'God of War Ragnarök',
+    coverUrl: 'https://images.igdb.com/igdb/image/upload/t_cover_big/co5s5v.webp',
+    releaseYear: 2022,
+    genres: ['Action-Adventure', 'Mythology'],
+    platforms: ['PlayStation 5', 'PlayStation 4', 'PC'],
+    developer: 'Santa Monica Studio',
+    summary: 'Kratos and Atreus must journey to each of the Nine Realms in search of answers as Asgardian forces prepare for a prophesied battle that will end the world.'
+  },
+  {
+    id: 'red-dead-redemption-2',
+    title: 'Red Dead Redemption 2',
+    coverUrl: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1174180/library_600x900_2x.jpg',
+    releaseYear: 2018,
+    genres: ['Open World', 'Action-Adventure', 'Western'],
+    platforms: ['PC', 'PS4', 'Xbox One'],
+    developer: 'Rockstar Games',
+    summary: 'America, 1899. Arthur Morgan and the Van der Linde gang are outlaws on the run. With federal agents and bounty hunters massing, the gang must rob, steal and fight across the rugged heartland.'
+  },
+  {
+    id: 'silent-hill-2',
+    title: 'Silent Hill 2 (Remake)',
+    coverUrl: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2124490/library_600x900_2x.jpg',
+    releaseYear: 2024,
+    genres: ['Survival Horror', 'Psychological Horror'],
+    platforms: ['PC', 'PlayStation 5'],
+    developer: 'Bloober Team',
+    summary: 'Having received a letter from his deceased wife, James heads to where they shared so many memories in the foggy town of Silent Hill. What he finds is a town veiled in fog and haunted by nightmares.'
+  },
+  {
+    id: 'castlevania-sotn',
+    title: 'Castlevania: Symphony of the Night',
+    coverUrl: 'https://images.igdb.com/igdb/image/upload/t_cover_big/co1rcj.webp',
+    releaseYear: 1997,
+    genres: ['Metroidvania', 'Action RPG', 'Gothic'],
+    platforms: ['PlayStation', 'Sega Saturn', 'PS4', 'Xbox 360', 'Mobile'],
+    developer: 'Konami',
+    summary: 'As Alucard, the dhampir son of Count Dracula, explore the shifting labyrinth of Draculas demonic castle to rid the world of the vampiric terror once and for all.'
+  },
+  {
+    id: 'super-mario-world',
+    title: 'Super Mario World',
+    coverUrl: 'https://images.igdb.com/igdb/image/upload/t_cover_big/co21bt.webp',
+    releaseYear: 1990,
+    genres: ['Platformer', 'Classic', 'Adventure'],
+    platforms: ['SNES', 'Game Boy Advance', 'Switch Online'],
+    developer: 'Nintendo',
+    summary: 'Mario and Luigi head to Dinosaur Land where Bowser has kidnapped Princess Toadstool and sealed Yoshi in a magic egg. Travel through Dinosaur Land and master cape flight.'
+  },
+  {
+    id: 'portal-2',
+    title: 'Portal 2',
+    coverUrl: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/620/library_600x900_2x.jpg',
+    releaseYear: 2011,
+    genres: ['Puzzle', 'Sci-Fi', 'First-Person'],
+    platforms: ['PC', 'PlayStation 3', 'Xbox 360', 'Nintendo Switch'],
+    developer: 'Valve',
+    summary: 'The "Perpetual Testing Initiative" has been expanded to allow you to design co-op puzzles for you and your friends! Break testing records with Chell and GLaDOS.'
+  },
+  {
+    id: 'half-life-2',
+    title: 'Half-Life 2',
+    coverUrl: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/220/library_600x900_2x.jpg',
+    releaseYear: 2004,
+    genres: ['FPS', 'Sci-Fi', 'Classic'],
+    platforms: ['PC', 'Xbox', 'PS3'],
+    developer: 'Valve',
+    summary: 'By taking the crowbar of research scientist Gordon Freeman, you find yourself on an alien-infested Earth being picked to the bone, its resources depleted, its populace dwindling.'
+  },
+  {
+    id: 'bioshock',
+    title: 'BioShock Remastered',
+    coverUrl: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/409710/library_600x900_2x.jpg',
+    releaseYear: 2007,
+    genres: ['FPS', 'Immersive Sim', 'Sci-Fi'],
+    platforms: ['PC', 'PS4', 'Xbox One', 'Switch'],
+    developer: '2K Boston',
+    summary: 'BioShock is a shooter unlike any you have ever played, loaded with weapons and tactics never seen. Explore Rapture, an undersea paradise turned dystopian nightmare.'
+  },
+  {
+    id: 'nier-automata',
+    title: 'NieR:Automata',
+    coverUrl: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/524220/library_600x900_2x.jpg',
+    releaseYear: 2017,
+    genres: ['Action RPG', 'Hack and Slash', 'Sci-Fi'],
+    platforms: ['PC', 'PS4', 'Nintendo Switch', 'Xbox One'],
+    developer: 'PlatinumGames',
+    summary: 'Invaders from another world attack without warning, unleashing machine lifeforms. In the face of this seemingly insurmountable threat, humanity is driven from the Earth.'
+  },
+  {
+    id: 'dragons-dogma-2',
+    title: "Dragon's Dogma 2",
+    coverUrl: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2054970/library_600x900_2x.jpg',
+    releaseYear: 2024,
+    genres: ['Action RPG', 'Open World', 'Fantasy'],
+    platforms: ['PC', 'PlayStation 5', 'Xbox Series X/S'],
+    developer: 'Capcom',
+    summary: 'Dragons Dogma 2 is a single player, narrative driven action-RPG that challenges the players to choose their own experience from the appearance of their Arisen to their vocation.'
+  },
+  {
+    id: 'sea-of-stars',
+    title: 'Sea of Stars',
+    coverUrl: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1244090/library_600x900_2x.jpg',
+    releaseYear: 2023,
+    genres: ['Turn-Based RPG', 'Retro', 'Indie'],
+    platforms: ['PC', 'Nintendo Switch', 'PS5', 'Xbox Series X/S', 'PS4'],
+    developer: 'Sabotage Studio',
+    summary: 'Sea of Stars is a turn-based RPG inspired by the classics. It tells the story of two Children of the Solstice who will combine the powers of the sun and moon to perform Eclipse Magic.'
+  },
+  {
+    id: 'dave-the-diver',
+    title: 'Dave the Diver',
+    coverUrl: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1868140/library_600x900_2x.jpg',
+    releaseYear: 2023,
+    genres: ['Adventure', 'Management', 'Indie'],
+    platforms: ['PC', 'Nintendo Switch', 'PS5', 'PS4'],
+    developer: 'MINTROCKET',
+    summary: 'DAVE THE DIVER is a casual, singleplayer adventure RPG featuring deep-sea exploration and fishing during the day and sushi restaurant management at night.'
+  },
+  {
+    id: 'dead-cells',
+    title: 'Dead Cells',
+    coverUrl: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/588650/library_600x900_2x.jpg',
+    releaseYear: 2018,
+    genres: ['Roguelike', 'Metroidvania', 'Action'],
+    platforms: ['PC', 'Nintendo Switch', 'PS4', 'Xbox One', 'Mobile'],
+    developer: 'Motion Twin',
+    summary: 'Dead Cells is a rogue-lite, metroidvania inspired, action-platformer. You will explore a sprawling, ever-changing castle... assuming you are able to fight your way past its keepers.'
+  },
+  {
+    id: 'armored-core-6',
+    title: 'Armored Core VI: Fires of Rubicon',
+    coverUrl: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1888160/library_600x900_2x.jpg',
+    releaseYear: 2023,
+    genres: ['Mecha', 'Action', 'Sci-Fi'],
+    platforms: ['PC', 'PlayStation 5', 'Xbox Series X/S', 'PS4', 'Xbox One'],
+    developer: 'FromSoftware',
+    summary: 'A new action game based on the concept of the ARMORED CORE series that uses the knowledge gained from FromSoftwares recent action game development.'
+  },
+  {
+    id: 'street-fighter-6',
+    title: 'Street Fighter 6',
+    coverUrl: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1364780/library_600x900_2x.jpg',
+    releaseYear: 2023,
+    genres: ['Fighting', 'Arcade', 'Competitive'],
+    platforms: ['PC', 'PlayStation 5', 'Xbox Series X/S', 'PS4'],
+    developer: 'Capcom',
+    summary: 'Here comes Capcoms newest challenger! Powered by Capcoms proprietary RE ENGINE, the Street Fighter 6 experience spans across three distinct game modes.'
+  },
+  {
+    id: 'hi-fi-rush',
+    title: 'Hi-Fi RUSH',
+    coverUrl: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1817230/library_600x900_2x.jpg',
+    releaseYear: 2023,
+    genres: ['Rhythm', 'Action', 'Hack and Slash'],
+    platforms: ['PC', 'Xbox Series X/S', 'PlayStation 5'],
+    developer: 'Tango Gameworks',
+    summary: 'Feel the beat as wannabe rockstar Chai and his ragtag team of allies rebel against an evil robotics corporation in slick rhythm combat!'
+  },
+  {
+    id: 'yakuza-like-a-dragon',
+    title: 'Yakuza: Like a Dragon',
+    coverUrl: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1235140/library_600x900_2x.jpg',
+    releaseYear: 2020,
+    genres: ['JRPG', 'Turn-Based', 'Action-Comedy'],
+    platforms: ['PC', 'PS5', 'Xbox Series X/S', 'PS4', 'Xbox One'],
+    developer: 'Ryu Ga Gotoku Studio',
+    summary: 'Become Ichiban Kasuga, a low-ranking yakuza grunt left on the brink of death by the man he trusted most. Take up your legendary bat and get ready to crack some underworld skulls in dynamic RPG combat.'
+  },
+  {
+    id: 'metal-gear-solid-3',
+    title: 'Metal Gear Solid 3: Snake Eater',
+    coverUrl: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2131650/library_600x900_2x.jpg',
+    releaseYear: 2004,
+    genres: ['Stealth', 'Action', 'Military'],
+    platforms: ['PS2', 'PC', 'PS5', 'Xbox Series X/S', 'Nintendo Switch'],
+    developer: 'Konami',
+    summary: 'Origin of the legendary operative Snake. Infiltrate a Soviet military jungle fortress during the Cold War to rescue a defecting rocket scientist and eliminate your mentor, The Boss.'
+  },
+  {
+    id: 'ghost-of-tsushima',
+    title: 'Ghost of Tsushima DIRECTOR’S CUT',
+    coverUrl: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2215430/library_600x900_2x.jpg',
+    releaseYear: 2020,
+    genres: ['Action-Adventure', 'Open World', 'Samurai'],
+    platforms: ['PC', 'PlayStation 5', 'PlayStation 4'],
+    developer: 'Sucker Punch Productions',
+    summary: 'In the late 13th century, the Mongol empire has laid waste to entire nations. Jin Sakai must do whatever it takes, and forge the way of the Ghost, to protect his people.'
+  }
+];
+
+export const INITIAL_FOLDERS: Folder[] = [
+  {
+    id: 'folder-franquias',
+    name: 'Franquias Favoritas',
+    description: 'Coleções e rankings das minhas séries de jogos preferidas de todos os tempos.',
+    color: '#8b5cf6', // Roxo/Violeta
+    createdAt: '2026-01-10'
+  },
+  {
+    id: 'folder-metas-2026',
+    name: 'Metas de 2026',
+    description: 'Planejamento de jogos para zerar e acompanhar durante o ano corrente.',
+    color: '#38bdf8', // Azul Celeste
+    createdAt: '2026-01-01'
+  },
+  {
+    id: 'folder-classicos',
+    name: 'Retrô & Clássicos Imortais',
+    description: 'Jogos fundamentais que marcaram época nas eras de ouro do SNES, PS1 e PS2.',
+    color: '#fbbf24', // Dourado
+    createdAt: '2026-02-15'
+  },
+  {
+    id: 'folder-indies',
+    name: 'Gêneros & Coleções Especiais',
+    description: 'Curadorias temáticas de jogos independentes, roguelikes e survival horror.',
+    color: '#34d399', // Esmeralda
+    createdAt: '2026-02-20'
+  }
+];
+
+export const INITIAL_LISTS: GameList[] = [
+  {
+    id: 'list-re-ranking',
+    folderId: 'folder-franquias',
+    title: 'Saga Resident Evil — Meu Ranking Pessoal',
+    description: 'Ordenando os melhores jogos da franquia do meu favorito absoluto ao menos empolgante.',
+    isRanked: true,
+    createdAt: '2026-01-12',
+    updatedAt: '2026-03-01',
+    items: [
+      { gameId: 'resident-evil-4-remake', order: 1, notes: 'Obra-prima de ação e ritmo de combate perfeito.', addedAt: '2026-01-12' },
+      { gameId: 'resident-evil-2-remake', order: 2, notes: 'O pináculo do survival horror moderno na delegacia RPD.', addedAt: '2026-01-12' },
+      { gameId: 'resident-evil-village', order: 3, notes: 'Castelo Dimitrescu e Casa Beneviento inesquecíveis.', addedAt: '2026-01-15' },
+      { gameId: 'resident-evil-7', order: 4, notes: 'A virada em primeira pessoa que ressuscitou a essência do terror.', addedAt: '2026-01-20' }
+    ]
+  },
+  {
+    id: 'list-ff-journey',
+    folderId: 'folder-franquias',
+    title: 'Final Fantasy — A Jornada dos Cristais',
+    description: 'Minhas experiências inesquecíveis pelos mundos mágicos da Square Enix.',
+    isRanked: false,
+    createdAt: '2026-01-18',
+    updatedAt: '2026-03-05',
+    items: [
+      { gameId: 'ffvii-rebirth', order: 1, notes: 'Mundo aberto primoroso e sistema de batalha impecável.', addedAt: '2026-02-28' },
+      { gameId: 'ffvii-remake', order: 2, notes: 'Midgar expandida com muita personalidade e carinho.', addedAt: '2026-01-18' },
+      { gameId: 'ff-x', order: 3, notes: 'Trilha sonora lendária de Zanarkand e história emocionante.', addedAt: '2026-01-18' },
+      { gameId: 'ff-ix', order: 4, notes: 'O charme medieval clássico de Zidane e Vivi.', addedAt: '2026-01-20' }
+    ]
+  },
+  {
+    id: 'list-soulsborne',
+    folderId: 'folder-franquias',
+    title: 'Soulsborne & Soulslikes de Destaque',
+    description: 'Jogos da FromSoftware e os melhores tributos que testaram minha paciência e habilidade.',
+    isRanked: true,
+    createdAt: '2026-02-01',
+    updatedAt: '2026-03-10',
+    items: [
+      { gameId: 'bloodborne', order: 1, notes: 'Atmosfera vitoriana e lovecraftiana inigualável.', addedAt: '2026-02-01' },
+      { gameId: 'elden-ring', order: 2, notes: 'A maior sensação de liberdade e mistério já feita.', addedAt: '2026-02-01' },
+      { gameId: 'sekiro', order: 3, notes: 'A melhor satisfação de parry e ritmo de combate da indústria.', addedAt: '2026-02-05' },
+      { gameId: 'lies-of-p', order: 4, notes: 'O melhor soulslike não feito pela FromSoftware.', addedAt: '2026-02-10' },
+      { gameId: 'dark-souls-3', order: 5, notes: 'Chefes finais lendários como Gael e Rei Sem Nome.', addedAt: '2026-02-12' }
+    ]
+  },
+  {
+    id: 'list-backlog-2026',
+    folderId: 'folder-metas-2026',
+    title: 'Prioridades Máximas para Zerar em 2026',
+    description: 'Os títulos que já comprei ou baixei e pretendo terminar até o final do ano.',
+    isRanked: false,
+    createdAt: '2026-01-05',
+    updatedAt: '2026-03-12',
+    items: [
+      { gameId: 'baldirs-gate-3', order: 1, notes: 'Atualmente no Ato 2 com mais de 45 horas!', addedAt: '2026-01-05' },
+      { gameId: 'alan-wake-2', order: 2, notes: 'Próximo na fila para jogar no escuro.', addedAt: '2026-01-05' },
+      { gameId: 'persona-3-reload', order: 3, notes: 'Continuar a exploração de Tartarus.', addedAt: '2026-01-10' },
+      { gameId: 'dragons-dogma-2', order: 4, notes: 'Exploração orgânica com peões.', addedAt: '2026-01-15' }
+    ]
+  },
+  {
+    id: 'list-zerados-2026',
+    folderId: 'folder-metas-2026',
+    title: 'Zerados com Sucesso em 2026',
+    description: 'Jogos que vi os créditos finais rolarem este ano.',
+    isRanked: false,
+    createdAt: '2026-01-15',
+    updatedAt: '2026-03-25',
+    items: [
+      { gameId: 'resident-evil-4-remake', order: 1, notes: 'Terminado no modo Profissional.', addedAt: '2026-01-20' },
+      { gameId: 'ffvii-rebirth', order: 2, notes: 'Campanha principal finalizada em 85 horas épicas.', addedAt: '2026-03-15' },
+      { gameId: 'balatro', order: 3, notes: 'Derrotado o Ante 8 com 4 baralhos diferentes.', addedAt: '2026-03-20' }
+    ]
+  },
+  {
+    id: 'list-retro-classics',
+    folderId: 'folder-classicos',
+    title: 'Tríade de Ouro do SNES & PS1',
+    description: 'Obras que definiram meu amor por videogames na infância e juventude.',
+    isRanked: false,
+    createdAt: '2026-02-16',
+    updatedAt: '2026-02-16',
+    items: [
+      { gameId: 'chrono-trigger', order: 1, notes: 'Perfeição do início ao fim em qualquer época.', addedAt: '2026-02-16' },
+      { gameId: 'castlevania-sotn', order: 2, notes: 'O que é um homem senão uma miserável pilha de segredos?', addedAt: '2026-02-16' },
+      { gameId: 'super-mario-world', order: 3, notes: 'O melhor jogo de plataforma 2D da história.', addedAt: '2026-02-16' }
+    ]
+  },
+  {
+    id: 'list-indie-gems',
+    folderId: 'folder-indies',
+    title: 'Indie Masterpieces que Todo Gamer Deve Jogar',
+    description: 'Jogos independentes que provam que criatividade supera orçamento gigantesco.',
+    isRanked: true,
+    createdAt: '2026-02-22',
+    updatedAt: '2026-03-01',
+    items: [
+      { gameId: 'hollow-knight', order: 1, notes: 'Hallownest tem mais vida e melancolia que quase qualquer AAA.', addedAt: '2026-02-22' },
+      { gameId: 'outer-wilds', order: 2, notes: 'Uma experiência de vida sobre curiosidade e aceitação.', addedAt: '2026-02-22' },
+      { gameId: 'hades', order: 3, notes: 'Loop de jogabilidade e narrativa mais viciante já criado.', addedAt: '2026-02-22' },
+      { gameId: 'celeste', order: 4, notes: 'Desafiador e profundamente tocante sobre ansiedade.', addedAt: '2026-02-22' }
+    ]
+  }
+];
+
+export const INITIAL_USER_STATUSES: Record<string, UserGameStatus> = {
+  'resident-evil-4-remake': {
+    gameId: 'resident-evil-4-remake',
+    status: 'completed',
+    rating: 5.0,
+    isFavorite: true,
+    review: 'O remake absoluto. A Capcom conseguiu honrar cada segundo do clássico de 2005 e modernizar a física, o combate com a faca e o clima sombrio do vilarejo.',
+    hoursPlayed: 32,
+    completedAt: '2026-01-20',
+    updatedAt: '2026-01-20'
+  },
+  'baldirs-gate-3': {
+    gameId: 'baldirs-gate-3',
+    status: 'playing',
+    rating: 5.0,
+    isFavorite: true,
+    review: 'A liberdade narrativa é algo sem precedentes nos últimos 15 anos. Cada escolha realmente parece moldar o destino do grupo.',
+    hoursPlayed: 56,
+    updatedAt: '2026-03-24'
+  },
+  'ffvii-rebirth': {
+    gameId: 'ffvii-rebirth',
+    status: 'completed',
+    rating: 4.5,
+    isFavorite: true,
+    review: 'A escala do mundo, os minigames do Queen’s Blood e o aprofundamento das relações entre Cloud, Tifa, Aerith e Barret foram surreais.',
+    hoursPlayed: 85,
+    completedAt: '2026-03-15',
+    updatedAt: '2026-03-15'
+  },
+  'elden-ring': {
+    gameId: 'elden-ring',
+    status: 'completed',
+    rating: 5.0,
+    isFavorite: true,
+    review: 'Uma jornada monumental. O sentimento de descoberta ao entrar em Leyndell ou descer até o Rio Siofra é algo que jamais esquecerei.',
+    hoursPlayed: 140,
+    completedAt: '2024-06-10',
+    updatedAt: '2024-06-10'
+  },
+  'bloodborne': {
+    gameId: 'bloodborne',
+    status: 'completed',
+    rating: 5.0,
+    isFavorite: true,
+    review: 'A obra máxima de Hidetaka Miyazaki. O som do sino de Yharnam e a agressividade nas esquivas são arte pura.',
+    hoursPlayed: 90,
+    completedAt: '2023-04-12',
+    updatedAt: '2023-04-12'
+  },
+  'hollow-knight': {
+    gameId: 'hollow-knight',
+    status: 'completed',
+    rating: 5.0,
+    isFavorite: true,
+    review: 'A trilha sonora de Christopher Larkin combinada à exploração em camadas de Hallownest colocam esse jogo no topo dos meus favoritos.',
+    hoursPlayed: 65,
+    completedAt: '2023-08-20',
+    updatedAt: '2023-08-20'
+  },
+  'balatro': {
+    gameId: 'balatro',
+    status: 'playing',
+    rating: 4.5,
+    isFavorite: false,
+    review: 'Simplesmente não consigo parar de abrir uma partida rápida antes de dormir. O som das fichas subindo é hipnótico.',
+    hoursPlayed: 45,
+    updatedAt: '2026-03-26'
+  },
+  'alan-wake-2': {
+    gameId: 'alan-wake-2',
+    status: 'backlog',
+    rating: 0,
+    isFavorite: false,
+    hoursPlayed: 2,
+    updatedAt: '2026-01-05'
+  },
+  'persona-3-reload': {
+    gameId: 'persona-3-reload',
+    status: 'playing',
+    rating: 4.0,
+    isFavorite: false,
+    hoursPlayed: 28,
+    updatedAt: '2026-03-20'
+  },
+  'chrono-trigger': {
+    gameId: 'chrono-trigger',
+    status: 'completed',
+    rating: 5.0,
+    isFavorite: true,
+    review: 'Jogado pela primeira vez nos anos 90 e rejogado inúmeras vezes. O ritmo é impecável, zero enrolação e personagens que marcaram minha vida.',
+    hoursPlayed: 35,
+    completedAt: '2022-11-10',
+    updatedAt: '2022-11-10'
+  },
+  'silent-hill-2': {
+    gameId: 'silent-hill-2',
+    status: 'wishlist',
+    rating: 0,
+    isFavorite: false,
+    updatedAt: '2026-02-01'
+  },
+  'dragons-dogma-2': {
+    gameId: 'dragons-dogma-2',
+    status: 'backlog',
+    rating: 0,
+    isFavorite: false,
+    updatedAt: '2026-02-10'
+  },
+  'outer-wilds': {
+    gameId: 'outer-wilds',
+    status: 'completed',
+    rating: 5.0,
+    isFavorite: true,
+    review: 'Não procure spoilers, apenas jogue. Uma obra prima existencial sobre o universo e nossa breve passagem nele.',
+    hoursPlayed: 26,
+    completedAt: '2024-02-14',
+    updatedAt: '2024-02-14'
+  },
+  'cyberpunk-2077': {
+    gameId: 'cyberpunk-2077',
+    status: 'completed',
+    rating: 4.5,
+    isFavorite: false,
+    review: 'Após o update 2.0 e Phantom Liberty, Night City se tornou a cidade mais viva e atmosférica dos videogames.',
+    hoursPlayed: 80,
+    completedAt: '2024-05-18',
+    updatedAt: '2024-05-18'
+  },
+  'hades-2': {
+    gameId: 'hades-2',
+    status: 'backlog',
+    rating: 0,
+    isFavorite: false,
+    updatedAt: '2026-03-01'
+  }
+};
+
+export const INITIAL_LOGS: GameLog[] = [
+  {
+    id: 'log-1',
+    gameId: 'balatro',
+    date: '2026-03-26',
+    status: 'playing',
+    rating: 4.5,
+    review: 'Consegui quebrar o Ante 8 usando um combo insano de Baralho Vermelho e multiplicadores de Flush!',
+    hoursSpent: 3
+  },
+  {
+    id: 'log-2',
+    gameId: 'baldirs-gate-3',
+    date: '2026-03-24',
+    status: 'playing',
+    rating: 5.0,
+    review: 'Chegando às Torres do Alvorecer. As escolhas morais com o Shadowheart estão me deixando sem fôlego.',
+    hoursSpent: 5
+  },
+  {
+    id: 'log-3',
+    gameId: 'ffvii-rebirth',
+    date: '2026-03-15',
+    status: 'completed',
+    rating: 4.5,
+    review: 'Créditos finais rolando após 85 horas de campanha! Batalha final espetacular e muita nostalgia.',
+    hoursSpent: 6
+  },
+  {
+    id: 'log-4',
+    gameId: 'persona-3-reload',
+    date: '2026-03-08',
+    status: 'playing',
+    rating: 4.0,
+    review: 'Passando do 5º bloco de Tartarus. A nova trilha sonora com a Lotus Juice é viciante.',
+    hoursSpent: 4
+  },
+  {
+    id: 'log-5',
+    gameId: 'resident-evil-4-remake',
+    date: '2026-01-20',
+    status: 'completed',
+    rating: 5.0,
+    review: 'Zerei a campanha no modo Hardcore! Leon chutando zumbis com precisão militar. 10/10.',
+    hoursSpent: 8
+  }
+];
+
+export const INITIAL_USER_PROFILE: UserProfile = {
+  username: 'Leonio_Ranulfo',
+  displayName: 'Leonio Ranulfo',
+  avatarUrl: 'https://images.unsplash.com/photo-1566492031773-4f4e44671857?q=80&w=250&auto=format&fit=crop',
+  bannerUrl: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1600&auto=format&fit=crop',
+  bio: 'Apaixonado por games, RPGs de turno, Survival Horror e experiências que marcam época. Organizando meu backlog e registrando cada conquista.',
+  location: 'Brasil',
+  favoriteGameIds: ['resident-evil-4-remake', 'bloodborne', 'chrono-trigger', 'outer-wilds', 'elden-ring']
+};
