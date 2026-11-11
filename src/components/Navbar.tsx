@@ -81,10 +81,11 @@ export const Navbar: React.FC = () => {
 
           <button
             onClick={() => setIsBackupModalOpen(true)}
-            className="p-2 text-slate-400 hover:text-slate-200 hover:bg-white/5 rounded-lg transition-colors"
-            title="Backup e Dados JSON"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 text-slate-300 hover:text-white bg-white/5 hover:bg-white/10 rounded-lg transition-colors border border-white/5 text-xs cursor-pointer"
+            title="Backup e Dados JSON (pasta /backup)"
           >
-            <Database className="w-4 h-4" />
+            <Database className="w-3.5 h-3.5 text-indigo-400" />
+            <span className="hidden sm:inline font-mono text-[11px]">Backup</span>
           </button>
 
           <button

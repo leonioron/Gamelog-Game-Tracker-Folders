@@ -104,9 +104,11 @@ interface StoreContextType {
   updateUserProfile: (updates: Partial<UserProfile>) => void;
 
   // Import / Export
-  exportData: () => void;
+  exportData: () => Promise<{ success: boolean; filename?: string; message?: string }>;
   importData: (jsonString: string) => boolean;
   resetToDefaults: () => void;
+  lastLoadedBackupName: string | null;
+  serverBackupAvailable: boolean;
 
   // Helpers
   getGameById: (id: string) => Game | undefined;
@@ -191,6 +193,47 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [isBackupModalOpen, setIsBackupModalOpen] = useState(false);
   const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false);
   const [isImportBackloggdModalOpen, setIsImportBackloggdModalOpen] = useState(false);
+
+  const [lastLoadedBackupName, setLastLoadedBackupName] = useState<string | null>(null);
+  const [serverBackupAvailable, setServerBackupAvailable] = useState<boolean>(false);
+
+  // Auto-import latest backup file from server /backup directory on startup
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadLatestBackup() {
+      try {
+        const res = await fetch('/api/backups/latest');
+        if (!res.ok) return;
+        const result = await res.json();
+
+        if (isMounted && result.success && result.backup && result.backup.data) {
+          const { filename, data } = result.backup;
+          setServerBackupAvailable(true);
+          setLastLoadedBackupName(filename);
+
+          // Apply latest backup state directly
+          if (data.games && Array.isArray(data.games)) setGames(data.games);
+          if (data.folders && Array.isArray(data.folders)) setFolders(data.folders);
+          if (data.lists && Array.isArray(data.lists)) setLists(data.lists);
+          if (data.userStatuses && typeof data.userStatuses === 'object') setUserStatuses(data.userStatuses);
+          if (data.logs && Array.isArray(data.logs)) setLogs(data.logs);
+          if (data.userProfile && typeof data.userProfile === 'object') setUserProfile(data.userProfile);
+
+          console.log(`[Backup] Dados carregados automaticamente do backup mais recente: ${filename}`);
+        }
+      } catch (err) {
+        // Running purely static or offline fallback
+        console.warn('[Backup] Não foi possível consultar /api/backups/latest:', err);
+      }
+    }
+
+    loadLatestBackup();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   // Sync state to local storage
   useEffect(() => {
@@ -498,7 +541,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   // Backup & Restore
-  const exportData = () => {
+  const exportData = async (): Promise<{ success: boolean; filename?: string; message?: string }> => {
     const backup = {
       version: 1,
       exportedAt: new Date().toISOString(),
@@ -509,15 +552,46 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       logs,
       userProfile
     };
+
+    let serverSavedFilename: string | undefined;
+
+    // 1. Save directly into project's /backup folder via backend API
+    try {
+      const response = await fetch('/api/backups/export', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(backup),
+      });
+      if (response.ok) {
+        const resData = await response.json();
+        if (resData.success) {
+          serverSavedFilename = resData.filename;
+          setLastLoadedBackupName(resData.filename);
+          setServerBackupAvailable(true);
+        }
+      }
+    } catch (err) {
+      console.warn('[Backup] Não foi possível salvar via API /api/backups/export:', err);
+    }
+
+    // 2. Also trigger browser download for user convenience
     const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `backloggd-leonio-backup-${new Date().toISOString().split('T')[0]}.json`;
+    a.download = serverSavedFilename || `backloggd-leonio-backup-${new Date().toISOString().split('T')[0]}.json`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+
+    return {
+      success: true,
+      filename: serverSavedFilename,
+      message: serverSavedFilename
+        ? `Backup salvo na pasta backup/${serverSavedFilename} e download iniciado!`
+        : 'Backup baixado com sucesso!'
+    };
   };
 
   const importData = (jsonString: string): boolean => {
@@ -733,6 +807,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       exportData,
       importData,
       resetToDefaults,
+      lastLoadedBackupName,
+      serverBackupAvailable,
 
       getGameById,
       getGameStatus,

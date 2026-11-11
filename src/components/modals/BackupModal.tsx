@@ -3,11 +3,26 @@ import { useStore } from '../../context/StoreContext';
 import { Download, Upload, RotateCcw, X, Database, Check, AlertCircle } from 'lucide-react';
 
 export const BackupModal: React.FC = () => {
-  const { isBackupModalOpen, setIsBackupModalOpen, exportData, importData, resetToDefaults } = useStore();
+  const { isBackupModalOpen, setIsBackupModalOpen, exportData, importData, resetToDefaults, lastLoadedBackupName } = useStore();
   const [jsonInput, setJsonInput] = useState('');
   const [msg, setMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
 
   if (!isBackupModalOpen) return null;
+
+  const handleExport = async () => {
+    setIsExporting(true);
+    try {
+      const res = await exportData();
+      if (res.success) {
+        setMsg({ type: 'success', text: res.message || 'Backup exportado com sucesso!' });
+      }
+    } catch (err: any) {
+      setMsg({ type: 'error', text: 'Erro ao exportar backup: ' + (err.message || 'Erro desconhecido') });
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -79,19 +94,33 @@ export const BackupModal: React.FC = () => {
 
           {/* Export section */}
           <div className="p-4 rounded-xl bg-white/5 border border-white/5 space-y-2">
-            <h3 className="text-xs font-semibold text-slate-200 flex items-center gap-2">
-              <Download className="w-4 h-4 text-indigo-400" />
-              <span>Baixar Arquivo de Backup</span>
+            <h3 className="text-xs font-semibold text-slate-200 flex items-center justify-between">
+              <span className="flex items-center gap-2">
+                <Download className="w-4 h-4 text-indigo-400" />
+                <span>Exportar Dados</span>
+              </span>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                Salva em /backup
+              </span>
             </h3>
-            <p className="text-xs text-slate-400">
-              Salva um arquivo <code className="text-indigo-300 font-mono">.json</code> completo com todas as suas pastas, listas de jogos, resenhas e diário de jogatina.
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Gera e grava automaticamente uma cópia <code className="text-indigo-300 font-mono">.json</code> na pasta <code className="text-amber-300 font-mono">backup/</code> do projeto (além de baixar no navegador). Toda vez que você iniciar o app, ele recarrega o backup mais recente desta pasta!
             </p>
+            {lastLoadedBackupName && (
+              <div className="text-[11px] font-mono text-slate-400 bg-black/40 px-3 py-1.5 rounded-lg border border-white/5 flex items-center justify-between">
+                <span>Backup carregado na inicialização:</span>
+                <span className="text-indigo-400 font-semibold truncate max-w-[200px]" title={lastLoadedBackupName}>
+                  {lastLoadedBackupName}
+                </span>
+              </div>
+            )}
             <button
-              onClick={exportData}
-              className="mt-2 w-full py-2.5 px-4 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 rounded-lg transition-colors cursor-pointer flex items-center justify-center gap-2"
+              onClick={handleExport}
+              disabled={isExporting}
+              className="mt-2 w-full py-2.5 px-4 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 rounded-lg transition-colors cursor-pointer flex items-center justify-center gap-2"
             >
               <Download className="w-4 h-4" />
-              <span>Exportar Backup (Download JSON)</span>
+              <span>{isExporting ? 'Exportando para /backup...' : 'Exportar para pasta /backup & Download'}</span>
             </button>
           </div>
 
