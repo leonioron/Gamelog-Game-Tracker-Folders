@@ -1,0 +1,44 @@
+Quero criar um aplicativo mobile-first com suporte completo a Web e empacotamento em APK Android instalável usando React, TypeScript, Vite, Tailwind CSS e Capacitor.
+
+Objetivo e tema do aplicativo:
+[DESCREVA AQUI O OBJETIVO, PÚBLICO E FUNCIONALIDADES DO NOVO APP]
+
+Requisitos técnicos e estruturais (obrigatórios):
+
+1. Arquitetura e Organização de Pastas:
+- `src/types/`: interfaces e tipos TypeScript do domínio.
+- `src/data/`: dados iniciais/seed e catálogo estático local (sem depender de servidor).
+- `src/utils/`: funções puras de formatação, datas locais (evitando desvios de fuso UTC) e validação de formulários.
+- `src/services/storage.ts`: persistência 100% offline/local-first usando `IndexedDB` como banco principal com fallback e sincronização automática em `localStorage`.
+- `src/components/`: componentes modulares por tela/aba e modais dedicados.
+- `src/App.tsx`: shell principal com estado global persistido, toast de feedback e controle de modais.
+
+2. Layout Mobile / Android WebView (regras rígidas de responsividade):
+- Tema escuro de alto contraste (`#090D14` fundo, `#121824` superfícies/cards, cor de destaque vibrante, números com `tabular-nums`).
+- Barra de navegação fixa na base (`fixed bottom-0`) no celular com 4 abas principais e navegação superior no desktop.
+- Espaçamento superior de proteção de no mínimo 32px (`--app-safe-top: max(32px, env(safe-area-inset-top, 0px))`) com faixa fixa no topo (`h-safe-top bg-[#090D14]`) + cabeçalho posicionado abaixo dela (`sticky top-safe-top`) + `pt-safe-top` em todos os modais, evitando sobreposição pela barra de notificações/status do Android.
+- Prevenção de arraste lateral e área morta à direita SEM quebrar a rolagem vertical principal nem o `sticky`:
+  - Usar `overflow-x: clip` (nunca `overflow-x: hidden`) em `html`, `body` e no container raiz.
+  - Aplicar `min-w-0` em todos os containers flex/grid e `flex-1 min-w-0 w-0` em `<input>` dentro de linhas flex (ex.: steppers `- / +`).
+  - Garantir que modais não ultrapassem a largura da tela (`w-full max-w-full min-w-0`) e que o botão de fechar (`X`) tenha `shrink-0` sempre visível.
+- Área de toque mínima de `44px × 44px` em botões e controles interativos.
+- Não usar `window.alert`, `window.confirm` ou `window.open`; usar modais/confirmações inline na própria UI.
+
+3. Portabilidade de Dados (Offline + WebView):
+- Seção de Exportar/Importar em `.json` (com opções de mesclar ou substituir tudo) e exportação de relatório em `.csv`.
+- No Android nativo via Capacitor (`Capacitor.isNativePlatform()`), salvar arquivos temporários e abrir a folha de compartilhamento nativa com `@capacitor/filesystem` e `@capacitor/share`; na Web usar download via `Blob`; incluir também fallback de copiar/colar JSON em texto para WebViews restritos.
+- Todos os assets (imagens/ícones) devem ficar localmente em `public/` para funcionar offline no APK.
+
+4. Empacotamento Android (Capacitor + CI/CD no GitHub Actions):
+- Configurar Capacitor (`@capacitor/core`, `@capacitor/cli`, `@capacitor/android`, `@capacitor/filesystem`, `@capacitor/share`), arquivo `capacitor.config.ts` (`webDir: 'dist'`, `androidScheme: 'https'`, `backgroundColor: '#090D14'`) e gerar a pasta nativa `android/`.
+- Adicionar scripts no `package.json`: `"android:sync": "vite build && npx cap sync android"` e `"android:open": "npx cap open android"`.
+- Incluir no `android/build.gradle` o espelho `https://maven-central.storage-download.googleapis.com/maven2/` antes de `mavenCentral()` para evitar erros `HTTP 429`.
+- Criar o workflow `.github/workflows/build-apk.yml` (disparo manual `workflow_dispatch` e no `push` em `main`/`master`) com:
+  - `actions/setup-node@v4` (Node 22, sem depender de `package-lock.json` caso use outro lockfile);
+  - `actions/setup-java@v4` (Java 21 Temurin);
+  - Aceite automático das licenças do Android SDK já pré-instalado no runner (`sdkmanager --licenses`, sem usar `setup-android` antigo);
+  - `init.d` do Gradle redirecionando `repo.maven.apache.org` para `https://maven-central.storage-download.googleapis.com/maven2/` + `gradle/actions/setup-gradle@v4`;
+  - `npm install --legacy-peer-deps`, `npm run build`, `npx cap sync android`;
+  - `./gradlew assembleDebug --no-daemon --max-workers=2`;
+  - `actions/upload-artifact@v4` publicando `android/app/build/outputs/apk/debug/app-debug.apk`.
+- Criar `README.md` e `BUILD_APK.md` explicando como rodar localmente e gerar/baixar o APK pelo GitHub Actions.

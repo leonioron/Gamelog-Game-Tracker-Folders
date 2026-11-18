@@ -1,274 +1,257 @@
 import React from 'react';
 import { useStore } from '../../context/StoreContext';
-import { GameCard } from '../GameCard';
 import { StarRating } from '../StarRating';
 import { StatusBadge } from '../StatusBadge';
-import { 
-  Play, 
-  Heart, 
-  Layers, 
-  BookOpen, 
-  ChevronRight, 
-  Plus, 
-  Sparkles,
-  Gamepad2,
-  FolderTree
+import { formatLocalDateDisplay } from '../../utils/date';
+import {
+  Play,
+  Heart,
+  BookOpen,
+  ChevronRight,
+  FolderTree,
+  CheckCircle2,
+  Bookmark,
 } from 'lucide-react';
 
 export const ViewOverview: React.FC = () => {
-  const { 
-    userStatuses, 
-    games, 
-    logs, 
-    lists, 
-    folders, 
-    setActiveView, 
-    setSelectedListId, 
-    getGameById, 
+  const {
+    userStatuses,
+    logs,
+    lists,
+    folders,
+    setActiveView,
+    setSelectedFolderId,
+    setSelectedListId,
+    getGameById,
     openGameModal,
-    openAddGameToListModal,
-    userProfile
   } = useStore();
 
-  // Currently playing games
-  const playingGameIds = Object.entries(userStatuses)
-    .filter(([_, st]) => st.status === 'playing')
-    .map(([id]) => id);
-  const playingGames = playingGameIds.map(id => getGameById(id)).filter(Boolean);
+  const statusesList = Object.values(userStatuses);
+  const playingCount = statusesList.filter((s) => s.status === 'playing').length;
+  const completedCount = statusesList.filter((s) => s.status === 'completed').length;
+  const backlogCount = statusesList.filter((s) => s.status === 'backlog').length;
+  const favoritesCount = statusesList.filter((s) => s.isFavorite).length;
 
-  // Favorite games
-  const favoriteGameIds = Object.entries(userStatuses)
-    .filter(([_, st]) => st.isFavorite)
-    .map(([id]) => id);
-  const favoriteGames = favoriteGameIds.map(id => getGameById(id)).filter(Boolean);
-
-  // Recent logs
-  const recentLogs = logs.slice(0, 4);
+  const recentLists = lists.slice(0, 2);
+  const recentLogs = logs.slice(0, 2);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10 pb-16">
-      
-      {/* 1. Currently Playing Section */}
-      <section className="space-y-4">
-        <div className="flex items-center justify-between pb-2 border-b border-white/5">
-          <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-lg bg-sky-500/10 text-sky-400">
-              <Play className="w-4 h-4 fill-sky-400" />
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-5 pb-8 space-y-7 min-w-0">
+      {/* Quick KPI Summary Cards: Jogando, Zerados, Backlog, Favoritos */}
+      <section className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 min-w-0">
+        <button
+          type="button"
+          onClick={() => setActiveView('playing')}
+          className="min-h-[44px] p-3.5 rounded-2xl bg-[#121824] border border-white/5 hover:border-sky-500/30 text-left transition-colors cursor-pointer"
+        >
+          <div className="flex items-center justify-between text-xs text-slate-400">
+            <span>Jogando</span>
+            <Play className="w-4 h-4 text-sky-400" />
+          </div>
+          <span className="text-xl font-bold font-mono tabular-nums text-white mt-1 block">
+            {playingCount}
+          </span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveView('completed')}
+          className="min-h-[44px] p-3.5 rounded-2xl bg-[#121824] border border-white/5 hover:border-emerald-500/30 text-left transition-colors cursor-pointer"
+        >
+          <div className="flex items-center justify-between text-xs text-slate-400">
+            <span>Zerados</span>
+            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+          </div>
+          <span className="text-xl font-bold font-mono tabular-nums text-white mt-1 block">
+            {completedCount}
+          </span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveView('backlog')}
+          className="min-h-[44px] p-3.5 rounded-2xl bg-[#121824] border border-white/5 hover:border-amber-500/30 text-left transition-colors cursor-pointer"
+        >
+          <div className="flex items-center justify-between text-xs text-slate-400">
+            <span>Backlog</span>
+            <Bookmark className="w-4 h-4 text-amber-400" />
+          </div>
+          <span className="text-xl font-bold font-mono tabular-nums text-white mt-1 block">
+            {backlogCount}
+          </span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveView('favorites')}
+          className="min-h-[44px] p-3.5 rounded-2xl bg-[#121824] border border-white/5 hover:border-pink-500/30 text-left transition-colors cursor-pointer"
+        >
+          <div className="flex items-center justify-between text-xs text-slate-400">
+            <span>Favoritos</span>
+            <Heart className="w-4 h-4 text-pink-400" />
+          </div>
+          <span className="text-xl font-bold font-mono tabular-nums text-white mt-1 block">
+            {favoritesCount}
+          </span>
+        </button>
+      </section>
+
+      {/* Pastas & Listas (últimos 2) */}
+      <section className="space-y-4 min-w-0">
+        <div className="flex items-center justify-between gap-2 pb-2 border-b border-white/5">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="p-2 rounded-xl bg-violet-500/10 text-violet-400 shrink-0">
+              <FolderTree className="w-4 h-4" />
             </div>
-            <div>
-              <h2 className="text-lg font-display font-bold text-white tracking-tight">
-                Atualmente Jogando
+            <div className="min-w-0">
+              <h2 className="text-base sm:text-lg font-display font-bold text-white tracking-tight truncate">
+                Pastas & Listas
               </h2>
-              <p className="text-xs text-slate-400">
-                Acompanhe o progresso das suas campanhas em andamento
+              <p className="text-xs text-slate-400 truncate">
+                Coleções temáticas e rankings recentes
               </p>
             </div>
           </div>
 
           <button
-            onClick={() => setActiveView('playing')}
-            className="text-xs text-indigo-400 hover:text-indigo-300 font-medium flex items-center gap-1 cursor-pointer"
+            type="button"
+            onClick={() => {
+              setSelectedFolderId(null);
+              setSelectedListId(null);
+              setActiveView('folders');
+            }}
+            className="min-h-[44px] px-2 text-xs text-indigo-400 hover:text-indigo-300 font-medium flex items-center gap-1 shrink-0 cursor-pointer"
           >
-            <span>Ver todos ({playingGames.length})</span>
-            <ChevronRight className="w-3.5 h-3.5" />
+            <span className="tabular-nums">Explorar ({lists.length})</span>
+            <ChevronRight className="w-4 h-4" />
           </button>
         </div>
 
-        {playingGames.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-            {playingGames.slice(0, 5).map(game => (
-              <GameCard key={game!.id} game={game!} />
-            ))}
+        {recentLists.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+            {recentLists.map((list) => {
+              const folder = folders.find((f) => f.id === list.folderId);
+              return (
+                <div
+                  key={list.id}
+                  onClick={() => {
+                    setSelectedListId(list.id);
+                    setActiveView('folders');
+                  }}
+                  className="p-4 sm:p-5 rounded-2xl bg-[#121824] hover:bg-[#171f2e] border border-white/5 hover:border-white/15 transition-all cursor-pointer group flex flex-col justify-between min-w-0"
+                >
+                  <div className="min-w-0">
+                    <div className="flex items-center justify-between gap-2 text-xs text-slate-400 mb-2">
+                      <span className="font-mono text-[11px] truncate">
+                        {folder ? `📁 ${folder.name}` : '📋 Lista Avulsa'}
+                      </span>
+                      <span className="tabular-nums font-mono text-slate-500 shrink-0">
+                        {list.items.length} {list.items.length === 1 ? 'jogo' : 'jogos'}
+                      </span>
+                    </div>
+                    <h3 className="text-sm sm:text-base font-semibold text-white group-hover:text-indigo-300 transition-colors truncate">
+                      {list.title}
+                    </h3>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         ) : (
-          <div className="p-8 rounded-2xl bg-[#141824]/60 border border-white/5 text-center">
-            <Gamepad2 className="w-10 h-10 text-slate-600 mx-auto mb-2" />
-            <p className="text-xs text-slate-400">
-              Você não possui nenhum jogo marcado como "Jogando" no momento.
-            </p>
-            <button
-              onClick={() => setActiveView('catalog')}
-              className="mt-3 px-3 py-1.5 text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-500 rounded-lg cursor-pointer"
-            >
-              Explorar Catálogo de Jogos
-            </button>
+          <div className="p-6 rounded-2xl bg-[#121824] border border-white/5 text-center text-xs text-slate-400">
+            Nenhuma lista criada ainda.
           </div>
         )}
       </section>
 
-      {/* 2. Featured Folders & Lists Section */}
-      <section className="space-y-4">
-        <div className="flex items-center justify-between pb-2 border-b border-white/5">
-          <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-lg bg-violet-500/10 text-violet-400">
-              <FolderTree className="w-4 h-4" />
-            </div>
-            <div>
-              <h2 className="text-lg font-display font-bold text-white tracking-tight">
-                Pastas & Listas de Jogos
-              </h2>
-              <p className="text-xs text-slate-400">
-                Sua curadoria organizada em pastas temáticas e rankings
-              </p>
-            </div>
-          </div>
-
-          <button
-            onClick={() => setActiveView('folders')}
-            className="text-xs text-indigo-400 hover:text-indigo-300 font-medium flex items-center gap-1 cursor-pointer"
-          >
-            <span>Explorar Pastas ({lists.length} listas)</span>
-            <ChevronRight className="w-3.5 h-3.5" />
-          </button>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {lists.slice(0, 3).map(list => {
-            const folder = folders.find(f => f.id === list.folderId);
-            const previewGames = list.items.slice(0, 3).map(i => getGameById(i.gameId)).filter(Boolean);
-
-            return (
-              <div
-                key={list.id}
-                onClick={() => {
-                  setSelectedListId(list.id);
-                  setActiveView('folders');
-                }}
-                className="p-5 rounded-2xl bg-[#131722] hover:bg-[#181d2a] border border-white/5 hover:border-white/15 transition-all cursor-pointer group flex flex-col justify-between"
-              >
-                <div>
-                  <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
-                    <span className="font-mono text-[11px] truncate max-w-[160px]">
-                      {folder ? `📁 ${folder.name}` : '📋 Lista Avulsa'}
-                    </span>
-                    <span className="tabular-nums font-mono text-slate-500">
-                      {list.items.length} jogos
-                    </span>
-                  </div>
-
-                  <h3 className="text-base font-semibold text-white group-hover:text-indigo-300 transition-colors">
-                    {list.title}
-                  </h3>
-
-                </div>
-
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* 3. Recent Logs Diary Feed */}
-      <section className="space-y-4">
-        <div className="flex items-center justify-between pb-2 border-b border-white/5">
-          <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-lg bg-indigo-500/10 text-indigo-400">
+      {/* Últimos Registros no Diário (últimos 2) */}
+      <section className="space-y-4 min-w-0">
+        <div className="flex items-center justify-between gap-2 pb-2 border-b border-white/5">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-400 shrink-0">
               <BookOpen className="w-4 h-4" />
             </div>
-            <div>
-              <h2 className="text-lg font-display font-bold text-white tracking-tight">
-                Últimos Registros no Diário (Logs)
+            <div className="min-w-0">
+              <h2 className="text-base sm:text-lg font-display font-bold text-white tracking-tight truncate">
+                Últimos Registros no Diário
               </h2>
-              <p className="text-xs text-slate-400">
-                Histórico recente de impressões e conclusões de jogos
+              <p className="text-xs text-slate-400 truncate">
+                Histórico recente de jogatina
               </p>
             </div>
           </div>
 
           <button
+            type="button"
             onClick={() => setActiveView('logs')}
-            className="text-xs text-indigo-400 hover:text-indigo-300 font-medium flex items-center gap-1 cursor-pointer"
+            className="min-h-[44px] px-2 text-xs text-indigo-400 hover:text-indigo-300 font-medium flex items-center gap-1 shrink-0 cursor-pointer"
           >
-            <span>Ver Diário Completo ({logs.length})</span>
-            <ChevronRight className="w-3.5 h-3.5" />
+            <span className="tabular-nums">Diário ({logs.length})</span>
+            <ChevronRight className="w-4 h-4" />
           </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {recentLogs.map(log => {
-            const game = getGameById(log.gameId);
-            if (!game) return null;
+        {recentLogs.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+            {recentLogs.map((log) => {
+              const game = getGameById(log.gameId);
+              if (!game) return null;
 
-            return (
-              <div
-                key={log.id}
-                onClick={() => openGameModal(game.id)}
-                className="p-4 rounded-xl bg-[#141824] hover:bg-[#181d2c] border border-white/5 hover:border-white/15 transition-all flex gap-4 cursor-pointer group"
-              >
-                <div className="w-16 h-24 rounded-lg overflow-hidden bg-slate-900 border border-white/10 shrink-0">
-                  <img
-                    src={game.coverUrl}
-                    alt={game.title}
-                    referrerPolicy="no-referrer"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                  />
-                </div>
-
-                <div className="flex-1 min-w-0 space-y-1.5">
-                  <div className="flex items-center justify-between gap-2">
-                    <h4 className="text-sm font-semibold text-white truncate group-hover:text-indigo-300 transition-colors">
-                      {game.title}
-                    </h4>
-                    <span className="text-[11px] font-mono text-slate-500 shrink-0">
-                      {log.date}
-                    </span>
+              return (
+                <div
+                  key={log.id}
+                  onClick={() => openGameModal(game.id)}
+                  className="p-4 rounded-xl bg-[#121824] hover:bg-[#171f2e] border border-white/5 hover:border-white/15 transition-all flex gap-3.5 cursor-pointer group min-w-0"
+                >
+                  <div className="w-16 h-24 rounded-lg overflow-hidden bg-[#090D14] border border-white/10 shrink-0">
+                    <img
+                      src={game.coverUrl}
+                      alt={game.title}
+                      referrerPolicy="no-referrer"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                    />
                   </div>
 
-                  <div className="flex items-center gap-2">
-                    <StatusBadge status={log.status} size="sm" />
-                    {log.rating ? (
-                      <StarRating rating={log.rating} size="sm" showNumeric={true} />
-                    ) : null}
-                    {log.hoursSpent ? (
-                      <span className="text-[11px] font-mono text-slate-500">
-                        · {log.hoursSpent}h
+                  <div className="flex-1 min-w-0 space-y-1.5">
+                    <div className="flex items-center justify-between gap-2">
+                      <h4 className="text-sm font-semibold text-white truncate group-hover:text-indigo-300 transition-colors">
+                        {game.title}
+                      </h4>
+                      <span className="text-[11px] font-mono tabular-nums text-slate-500 shrink-0">
+                        {formatLocalDateDisplay(log.date)}
                       </span>
-                    ) : null}
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-2">
+                      <StatusBadge status={log.status} size="sm" />
+                      {log.rating ? (
+                        <StarRating rating={log.rating} size="sm" showNumeric={true} />
+                      ) : null}
+                      {log.hoursSpent ? (
+                        <span className="text-[11px] font-mono tabular-nums text-slate-500">
+                          · {log.hoursSpent}h
+                        </span>
+                      ) : null}
+                    </div>
+
+                    {log.review ? (
+                      <p className="text-xs text-slate-300 italic line-clamp-2 leading-relaxed pt-0.5">
+                        "{log.review}"
+                      </p>
+                    ) : (
+                      <p className="text-xs text-slate-500 italic">Registro de atividade.</p>
+                    )}
                   </div>
-
-                  {log.review ? (
-                    <p className="text-xs text-slate-300 italic line-clamp-2 leading-relaxed pt-1">
-                      "{log.review}"
-                    </p>
-                  ) : (
-                    <p className="text-xs text-slate-500 italic">
-                      Registro de atividade registrado.
-                    </p>
-                  )}
                 </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="p-6 rounded-2xl bg-[#121824] border border-white/5 text-center text-xs text-slate-400">
+            Nenhum registro recente no diário.
+          </div>
+        )}
       </section>
-
-      {/* 4. Leonio's Favorite Games Section */}
-      {favoriteGames.length > 0 && (
-        <section className="space-y-4">
-          <div className="flex items-center justify-between pb-2 border-b border-white/5">
-            <div className="flex items-center gap-2">
-              <div className="p-1.5 rounded-lg bg-pink-500/10 text-pink-400">
-                <Heart className="w-4 h-4 fill-pink-400" />
-              </div>
-              <div>
-                <h2 className="text-lg font-display font-bold text-white tracking-tight">
-                  Favoritos de Leonio Ranulfo
-                </h2>
-                <p className="text-xs text-slate-400">
-                  Títulos aclamados com nota máxima e lugar especial no coração
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-            {favoriteGames.slice(0, 5).map(game => (
-              <GameCard key={game!.id} game={game!} />
-            ))}
-          </div>
-        </section>
-      )}
-
     </div>
   );
 };

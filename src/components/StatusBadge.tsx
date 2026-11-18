@@ -1,6 +1,6 @@
 import React from 'react';
 import { GameStatus } from '../types';
-import { Play, CheckCircle2, Bookmark, Heart, XCircle, PauseCircle } from 'lucide-react';
+import { Play, CheckCircle2, Bookmark, Sparkles, XCircle, PauseCircle } from 'lucide-react';
 
 interface StatusBadgeProps {
   status: GameStatus;
@@ -36,7 +36,7 @@ export const STATUS_CONFIG: Record<GameStatus, {
     label: 'Desejo',
     color: 'text-pink-400',
     bgSubtle: 'bg-pink-500/10 text-pink-300 border-pink-500/20',
-    icon: Heart,
+    icon: Sparkles,
   },
   paused: {
     label: 'Pausado',

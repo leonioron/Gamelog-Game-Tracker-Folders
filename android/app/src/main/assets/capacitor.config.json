@@ -1,0 +1,9 @@
+{
+	"appId": "com.gamelog.app",
+	"appName": "Gamelog",
+	"webDir": "dist",
+	"backgroundColor": "#090D14",
+	"server": {
+		"androidScheme": "https"
+	}
+}

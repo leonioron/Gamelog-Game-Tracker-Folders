@@ -5,14 +5,18 @@
     --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     --font-display: 'Outfit', system-ui, sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
+    --app-safe-top: max(32px, env(safe-area-inset-top, 0px));
+    --app-safe-bottom: env(safe-area-inset-bottom, 0px);
   }
 
+  html,
   body {
     font-family: var(--font-sans);
-    background-color: #0c0f17;
+    background-color: #090D14;
     color: #e2e8f0;
     min-height: 100vh;
-    overflow-x: hidden;
+    overflow-x: clip;
+    -webkit-tap-highlight-color: transparent;
   }
 
   h1, h2, h3, .font-display {
@@ -20,16 +24,42 @@
   }
 }
 
+/* Safe-area utilities for Android WebView & iOS notches */
+.h-safe-top {
+  height: var(--app-safe-top);
+}
+
+.top-safe-top {
+  top: var(--app-safe-top);
+}
+
+.pt-safe-top {
+  padding-top: var(--app-safe-top);
+}
+
+.pb-safe-bottom {
+  padding-bottom: var(--app-safe-bottom);
+}
+
+/* Hide scrollbars cleanly where horizontal pills scroll on mobile */
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
 /* Custom dark scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #0c0f17;
+  background: #090D14;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1f293d;
+  background: #1e293b;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {

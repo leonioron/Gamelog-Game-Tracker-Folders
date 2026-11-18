@@ -820,8 +820,8 @@ export const INITIAL_LOGS: GameLog[] = [
 export const INITIAL_USER_PROFILE: UserProfile = {
   username: 'Leonio_Ranulfo',
   displayName: 'Leonio Ranulfo',
-  avatarUrl: 'https://images.unsplash.com/photo-1566492031773-4f4e44671857?q=80&w=250&auto=format&fit=crop',
-  bannerUrl: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1600&auto=format&fit=crop',
+  avatarUrl: '/assets/default-avatar.svg',
+  bannerUrl: '/assets/default-banner.svg',
   bio: 'Apaixonado por games, RPGs de turno, Survival Horror e experiências que marcam época. Organizando meu backlog e registrando cada conquista.',
   location: 'Brasil',
   favoriteGameIds: ['resident-evil-4-remake', 'bloodborne', 'chrono-trigger', 'outer-wilds', 'elden-ring']

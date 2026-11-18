@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useStore } from '../../context/StoreContext';
-import { Gamepad2, X, Plus, Image } from 'lucide-react';
+import { isValidHttpOrLocalUrl } from '../../utils/format';
+import { Gamepad2, X, Plus, Image, AlertCircle } from 'lucide-react';
 
 export const CustomGameModal: React.FC = () => {
   const { isCustomGameModalOpen, setIsCustomGameModalOpen, createCustomGame, openGameModal } = useStore();
@@ -12,49 +13,74 @@ export const CustomGameModal: React.FC = () => {
   const [platforms, setPlatforms] = useState('PC, PlayStation 5');
   const [coverUrl, setCoverUrl] = useState('');
   const [summary, setSummary] = useState('');
+  const [formError, setFormError] = useState<string | null>(null);
 
   if (!isCustomGameModalOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title.trim()) return;
+    setFormError(null);
+    if (!title.trim()) {
+      setFormError('Informe o título do jogo.');
+      return;
+    }
+    if (coverUrl.trim() && !isValidHttpOrLocalUrl(coverUrl)) {
+      setFormError('Informe uma URL de imagem válida iniciando com http:// ou https://.');
+      return;
+    }
 
     const newGame = createCustomGame({
       title: title.trim(),
       releaseYear: Number(releaseYear) || new Date().getFullYear(),
       developer: developer.trim() || 'Estúdio Independente',
-      genres: genres.split(',').map(s => s.trim()).filter(Boolean),
-      platforms: platforms.split(',').map(s => s.trim()).filter(Boolean),
+      genres: genres.split(',').map((s) => s.trim()).filter(Boolean),
+      platforms: platforms.split(',').map((s) => s.trim()).filter(Boolean),
       coverUrl: coverUrl.trim(),
       summary: summary.trim(),
     });
 
+    setTitle('');
+    setDeveloper('');
+    setCoverUrl('');
+    setSummary('');
     setIsCustomGameModalOpen(false);
     openGameModal(newGame.id);
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
-      <div 
-        className="relative w-full max-w-lg bg-[#121622] border border-white/10 rounded-2xl shadow-2xl overflow-hidden my-8"
-        onClick={e => e.stopPropagation()}
+    <div
+      className="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-3 sm:p-4 pt-safe-top bg-black/80 backdrop-blur-sm overflow-y-auto"
+      onClick={() => setIsCustomGameModalOpen(false)}
+    >
+      <div
+        className="relative w-full max-w-lg min-w-0 bg-[#121824] border border-white/10 rounded-2xl shadow-2xl overflow-hidden my-2 sm:my-6 max-h-[88vh] flex flex-col"
+        onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between px-6 py-4 border-b border-white/5 bg-[#0f131d]">
-          <div className="flex items-center gap-2">
-            <Gamepad2 className="w-4 h-4 text-indigo-400" />
-            <h2 className="text-sm font-semibold text-white">
+        <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 border-b border-white/5 bg-[#090D14] shrink-0">
+          <div className="flex items-center gap-2 min-w-0">
+            <Gamepad2 className="w-4 h-4 text-indigo-400 shrink-0" />
+            <h2 className="text-sm font-semibold text-white truncate">
               Cadastrar Jogo Personalizado
             </h2>
           </div>
           <button
+            type="button"
             onClick={() => setIsCustomGameModalOpen(false)}
-            className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
+            className="min-h-[44px] min-w-[44px] -mr-2 flex items-center justify-center rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-colors cursor-pointer shrink-0"
+            aria-label="Fechar modal"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 overflow-y-auto min-w-0">
+          {formError && (
+            <div className="p-3 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 shrink-0" />
+              <span>{formError}</span>
+            </div>
+          )}
+
           <div>
             <label className="block text-xs text-slate-400 mb-1.5 font-medium">
               Título do Jogo *
@@ -62,15 +88,15 @@ export const CustomGameModal: React.FC = () => {
             <input
               type="text"
               required
-              placeholder="Ex: Silent Hill, Final Fantasy Tactics, Metroid Dread..."
+              placeholder="Ex: Silent Hill, Final Fantasy Tactics..."
               value={title}
-              onChange={e => setTitle(e.target.value)}
-              className="w-full bg-[#0d1017] border border-white/10 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500"
+              onChange={(e) => setTitle(e.target.value)}
+              className="min-h-[44px] w-full bg-[#090D14] border border-white/10 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500"
               autoFocus
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block text-xs text-slate-400 mb-1.5 font-medium">
                 Ano de Lançamento
@@ -80,8 +106,8 @@ export const CustomGameModal: React.FC = () => {
                 min="1970"
                 max="2035"
                 value={releaseYear}
-                onChange={e => setReleaseYear(Number(e.target.value))}
-                className="w-full bg-[#0d1017] border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-indigo-500 font-mono"
+                onChange={(e) => setReleaseYear(Number(e.target.value))}
+                className="min-h-[44px] w-full bg-[#090D14] border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-indigo-500 font-mono tabular-nums"
               />
             </div>
 
@@ -91,10 +117,10 @@ export const CustomGameModal: React.FC = () => {
               </label>
               <input
                 type="text"
-                placeholder="Ex: Konami, Nintendo, FromSoftware"
+                placeholder="Ex: Konami, Nintendo"
                 value={developer}
-                onChange={e => setDeveloper(e.target.value)}
-                className="w-full bg-[#0d1017] border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500"
+                onChange={(e) => setDeveloper(e.target.value)}
+                className="min-h-[44px] w-full bg-[#090D14] border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500"
               />
             </div>
           </div>
@@ -107,10 +133,10 @@ export const CustomGameModal: React.FC = () => {
               <Image className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="url"
-                placeholder="https://... (deixe em branco para usar arte padrão)"
+                placeholder="https://... (em branco usa capa offline local)"
                 value={coverUrl}
-                onChange={e => setCoverUrl(e.target.value)}
-                className="w-full bg-[#0d1017] border border-white/10 rounded-xl pl-10 pr-3.5 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500"
+                onChange={(e) => setCoverUrl(e.target.value)}
+                className="min-h-[44px] w-full bg-[#090D14] border border-white/10 rounded-xl pl-10 pr-3.5 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500"
               />
             </div>
           </div>
@@ -121,10 +147,10 @@ export const CustomGameModal: React.FC = () => {
             </label>
             <input
               type="text"
-              placeholder="Ex: JRPG, Survival Horror, Aventura"
+              placeholder="Ex: JRPG, Survival Horror"
               value={genres}
-              onChange={e => setGenres(e.target.value)}
-              className="w-full bg-[#0d1017] border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500"
+              onChange={(e) => setGenres(e.target.value)}
+              className="min-h-[44px] w-full bg-[#090D14] border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500"
             />
           </div>
 
@@ -134,10 +160,10 @@ export const CustomGameModal: React.FC = () => {
             </label>
             <input
               type="text"
-              placeholder="Ex: PC, PS5, Switch, PS1, SNES"
+              placeholder="Ex: PC, PS5, Switch"
               value={platforms}
-              onChange={e => setPlatforms(e.target.value)}
-              className="w-full bg-[#0d1017] border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500"
+              onChange={(e) => setPlatforms(e.target.value)}
+              className="min-h-[44px] w-full bg-[#090D14] border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500"
             />
           </div>
 
@@ -147,10 +173,10 @@ export const CustomGameModal: React.FC = () => {
             </label>
             <textarea
               rows={2}
-              placeholder="Breve resumo da trama ou proposta do jogo..."
+              placeholder="Breve resumo do jogo..."
               value={summary}
-              onChange={e => setSummary(e.target.value)}
-              className="w-full bg-[#0d1017] border border-white/10 rounded-xl p-3 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 resize-none"
+              onChange={(e) => setSummary(e.target.value)}
+              className="w-full bg-[#090D14] border border-white/10 rounded-xl p-3 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 resize-none"
             />
           </div>
 
@@ -158,16 +184,16 @@ export const CustomGameModal: React.FC = () => {
             <button
               type="button"
               onClick={() => setIsCustomGameModalOpen(false)}
-              className="px-3.5 py-2 text-xs font-medium text-slate-400 hover:text-slate-200"
+              className="min-h-[44px] px-3.5 py-2 text-xs font-medium text-slate-400 hover:text-slate-200 cursor-pointer"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={!title.trim()}
-              className="px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 disabled:opacity-50 rounded-lg transition-colors cursor-pointer flex items-center gap-1.5"
+              className="min-h-[44px] px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 disabled:opacity-50 rounded-xl transition-colors cursor-pointer flex items-center gap-1.5"
             >
-              <Plus className="w-3.5 h-3.5" />
+              <Plus className="w-4 h-4 shrink-0" />
               <span>Cadastrar e Abrir</span>
             </button>
           </div>

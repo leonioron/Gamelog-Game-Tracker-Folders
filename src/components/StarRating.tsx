@@ -22,16 +22,16 @@ export const StarRating: React.FC<StarRatingProps> = ({
 
   const starSizes = {
     sm: 'w-3.5 h-3.5',
-    md: 'w-4 h-4',
-    lg: 'w-5 h-5',
+    md: 'w-5 h-5',
+    lg: 'w-6 h-6',
   };
 
   const currentVal = hoverRating !== null ? hoverRating : rating;
 
   return (
     <div className="flex items-center gap-1.5">
-      <div 
-        className="flex items-center gap-0.5" 
+      <div
+        className={`flex items-center ${interactive ? 'gap-0.5' : 'gap-0.5'}`}
         onMouseLeave={() => interactive && setHoverRating(null)}
       >
         {Array.from({ length: maxStars }).map((_, index) => {
@@ -46,7 +46,6 @@ export const StarRating: React.FC<StarRatingProps> = ({
               disabled={!interactive}
               onClick={() => {
                 if (interactive && onChange) {
-                  // If clicking the current rating, allow resetting to 0
                   if (rating === starValue) {
                     onChange(0);
                   } else {
@@ -56,30 +55,27 @@ export const StarRating: React.FC<StarRatingProps> = ({
               }}
               onMouseEnter={() => interactive && setHoverRating(starValue)}
               className={`relative transition-transform ${
-                interactive 
-                  ? 'cursor-pointer hover:scale-115 active:scale-95 focus:outline-none' 
+                interactive
+                  ? 'min-h-[36px] min-w-[32px] flex items-center justify-center cursor-pointer active:scale-95 focus:outline-none'
                   : 'cursor-default'
               }`}
               title={interactive ? `Avaliar ${starValue} estrelas` : `${rating} estrelas`}
             >
-              {/* Background empty star */}
-              <Star 
-                className={`${starSizes[size]} text-slate-700 transition-colors`} 
-                strokeWidth={1.5}
-              />
+              <span className="relative inline-flex">
+                <Star className={`${starSizes[size]} text-slate-700 transition-colors`} strokeWidth={1.5} />
 
-              {/* Half or full overlay */}
-              {(isFull || isHalf) && (
-                <div 
-                  className="absolute inset-0 overflow-hidden" 
-                  style={{ width: isHalf ? '50%' : '100%' }}
-                >
-                  <Star 
-                    className={`${starSizes[size]} fill-amber-400 text-amber-400 transition-colors`} 
-                    strokeWidth={1.5}
-                  />
-                </div>
-              )}
+                {(isFull || isHalf) && (
+                  <span
+                    className="absolute inset-0 overflow-hidden"
+                    style={{ width: isHalf ? '50%' : '100%' }}
+                  >
+                    <Star
+                      className={`${starSizes[size]} fill-amber-400 text-amber-400 transition-colors`}
+                      strokeWidth={1.5}
+                    />
+                  </span>
+                )}
+              </span>
             </button>
           );
         })}

@@ -5,7 +5,8 @@ import {
   Play, 
   Bookmark, 
   CheckCircle2, 
-  Heart, 
+  Heart,
+  Sparkles,
   Star, 
   BookOpen, 
   MapPin, 
@@ -45,7 +46,7 @@ export const ProfileHeader: React.FC = () => {
     { label: 'Jogando', count: playingCount, icon: Play, color: 'text-sky-400', view: 'playing' as const },
     { label: 'Backlog', count: backlogCount, icon: Bookmark, color: 'text-amber-400', view: 'backlog' as const },
     { label: 'Zerados', count: completedCount, icon: CheckCircle2, color: 'text-emerald-400', view: 'completed' as const },
-    { label: 'Desejos', count: wishlistCount, icon: Heart, color: 'text-pink-400', view: 'wishlist' as const },
+    { label: 'Desejos', count: wishlistCount, icon: Sparkles, color: 'text-pink-400', view: 'wishlist' as const },
     { label: 'Pastas & Listas', count: lists.length, icon: FolderTree, color: 'text-violet-400', view: 'folders' as const },
     { label: 'Diário de Logs', count: logs.length, icon: BookOpen, color: 'text-slate-300', view: 'logs' as const },
   ];

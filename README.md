@@ -1,6 +1,6 @@
-# Gamelog — Gerenciador de Backlog, Pastas & Listas de Jogos
+# Gamelog — Mobile-First Backlog, Pastas & Listas de Jogos
 
-**Gamelog** é uma aplicação web completa e moderna inspirada na estética e funcionalidades do [Backloggd](https://www.backloggd.com/), desenvolvida para organizar, catalogar e acompanhar todo o seu histórico de jogos em uma hierarquia elegante:
+**Gamelog** é uma aplicação **mobile-first**, **100% offline/local-first**, com suporte completo à Web e empacotamento em **APK Android** instalável via **Capacitor**, organizada na hierarquia:
 
 $$\text{Pasta} \longrightarrow \text{Lista de Jogos} \longrightarrow \text{Jogos}$$
 
@@ -9,116 +9,84 @@ $$\text{Pasta} \longrightarrow \text{Lista de Jogos} \longrightarrow \text{Jogos
 ## 🚀 Funcionalidades Principais
 
 1. **Hierarquia Completa de 3 Níveis**:
-   - **Pastas (Folders)**: Agrupe listas por temas (ex: *Franquias Favoritas*, *Metas de 2026*, *RPGs Clássicos*, *PlayStation Hits*), com cores e descrições customizadas.
-   - **Listas de Jogos**: Crie listas temáticas dentro de pastas ou avulsas (raiz), com suporte a rankings ordenados (#1, #2, #3...), anotações por jogo e reordenação rápida.
-   - **Jogos**: Detalhes completos com pôsteres em alta definição, ano de lançamento, gênero, plataformas e desenvolvedora.
+   - **Pastas (Folders)**: Agrupe listas por temas (ex: *Franquias Favoritas*, *Metas de 2026*, *Clássicos Imortais*), com cores e descrições personalizadas.
+   - **Listas de Jogos**: Listas dentro de pastas ou avulsas, com suporte a rankings numerados (`#1`, `#2`, `#3...`), anotações e reordenação.
+   - **Jogos**: Catálogo embutido com mais de 45 títulos aclamados + cadastro manual offline com fallback local em `public/assets/`.
 
-2. **Acompanhamento de Status e Diário de Jogatina (Logs)**:
-   - Status: *Jogando*, *Backlog*, *Zerados (Completed)*, *Lista de Desejos (Wishlist)*, *Pausados* e *Abandonados*.
-   - Avaliações em estrelas (0 a 5 com meias estrelas), resenhas escritas e contagem de horas jogadas.
-   - Sistema de favoritos (coração) e registro cronológico no Diário de Jogos.
+2. **Acompanhamento de Status & Diário (Logs)**:
+   - Status: *Jogando*, *Backlog*, *Zerados*, *Desejo*, *Pausado* e *Abandonado*.
+   - Avaliação em estrelas (1 a 5), contador de horas jogadas (`- / +`), favoritos e resenhas.
+   - Diário cronológico usando datas locais (`YYYY-MM-DD` / `DD/MM/YYYY`), sem desvios de fuso UTC.
 
-3. **Catálogo Integrado & Cadastro de Jogos Customizados**:
-   - Catálogo pré-carregado com mais de 60 títulos aclamados (FromSoftware, Capcom, Square Enix, PlayStation Studios, etc.).
-   - Filtros por Gênero e Plataforma em tempo real.
-   - Cadastro de novos jogos com capa personalizada via URL.
+3. **Experiência Mobile-First & Android WebView**:
+   - Tema escuro de alto contraste (`#090D14` fundo, `#121824` cartões, destaque `#6366F1` e `tabular-nums`).
+   - Navegação fixa na base (`fixed bottom-0`) com 4 abas no celular (`Início`, `Pastas`, `Acervo`, `Catálogo`) e barra superior completa no desktop.
+   - Proteção de topo (`--app-safe-top: max(32px, env(safe-area-inset-top, 0px))`) contra sobreposição pela barra de status do Android.
+   - Área de toque mínima de `44px × 44px` e zero diálogos nativos (`alert`/`confirm`/`open`).
 
-4. **Operações em Lote (Multi-Select)**:
-   - Seleção múltipla para remover vários jogos de uma lista ou de um status específico de uma só vez.
-   - Exclusão em lote de pastas e listas de jogos com modais de confirmação seguros.
-
-5. **Importador do Backloggd via URL**:
-   - Importe pastas, listas e histórico diretamente de perfis públicos do Backloggd.
-
-6. **Sistema de Backup Automático & Persistência Local**:
-   - **Auto-Importação**: Sempre que o projeto é iniciado (`npm run dev` ou `npm start`), o servidor consulta automaticamente o arquivo `.json` mais recente contido na pasta `backup/` e carrega todo o estado.
-   - **Exportação Direta**: Ao clicar em **Backup → Exportar**, os dados são gravados diretamente na pasta `backup/` do projeto com carimbo de data e hora (ex: `backloggd-backup-2026-11-11-02-28-36.json`), além de iniciar o download no navegador.
+4. **Persistência 100% Offline & Portabilidade**:
+   - **IndexedDB** como banco principal com sincronização automática e fallback em `localStorage`.
+   - **Exportar JSON** e **Relatório CSV** (via compartilhamento nativo `@capacitor/filesystem` + `@capacitor/share` no Android, ou download via `Blob` na Web).
+   - **Importar JSON** com modo **Mesclar** (adiciona sem apagar dados atuais) ou **Substituir Tudo**, além de copiar/colar texto JSON para WebViews restritos.
+   - Quando executado com o servidor Node/Express local (`npm run dev`), também realiza auto-importação e exportação para a pasta `backup/`.
 
 ---
 
-## 📁 Estrutura de Pastas do Projeto
+## 📁 Estrutura de Pastas
 
 ```text
-├── backup/                    # 📁 Pasta onde os backups automáticos em .json são salvos e lidos
-│   └── backloggd-backup-*.json
+├── .github/workflows/
+│   └── build-apk.yml          # Pipeline CI/CD para gerar APK no GitHub Actions
+├── android/                   # Projeto nativo Android gerado pelo Capacitor
+├── backup/                    # Backups locais em .json (uso no servidor local)
+├── public/assets/             # Ícones e capas fallback locais (funcionam offline no APK)
 ├── src/
-│   ├── components/            # Componentes visuais modulares
-│   │   ├── modals/            # Modais (Backup, Confirmação, Detalhes, Edição de Pastas/Listas)
-│   │   ├── views/             # Telas principais (Perfil, Pastas, Status, Diário, Catálogo)
-│   │   ├── GameCard.tsx       # Card de jogo com pôster 3:4 e seleção múltipla
-│   │   ├── Navbar.tsx         # Barra superior com atalhos de navegação e backup
-│   │   └── SidebarTree.tsx    # Explorador em árvore de pastas e listas
-│   ├── context/
-│   │   └── StoreContext.tsx   # Gerenciamento de estado global e sincronização com /api/backups
-│   ├── data/
-│   │   └── initialData.ts     # Dados padrão de exemplo
-│   ├── types.ts               # Definições de tipos TypeScript
-│   ├── App.tsx                # Componente raiz da aplicação
-│   ├── main.tsx               # Ponto de entrada do React
-│   └── index.css              # Estilos globais e Tailwind CSS
-├── server.ts                  # Servidor Express Full-Stack com API de Backups e Vite
-├── package.json               # Dependências e scripts de execução
-├── tsconfig.json              # Configurações do TypeScript
-└── vite.config.ts             # Configuração do Vite e Tailwind CSS v4
+│   ├── types/                 # Interfaces TypeScript do domínio (index.ts)
+│   ├── data/                  # Catálogo estático e dados iniciais (initialData.ts)
+│   ├── utils/                 # Datas locais (date.ts), CSV/validação (format.ts), parser Backloggd
+│   ├── services/              # IndexedDB + localStorage (storage.ts) e exportação nativa/Web (fileExport.ts)
+│   ├── context/               # StoreContext.tsx com estado global e Toast
+│   ├── components/            # Navbar, MobileBottomNav, AcervoSubNav, views/ e modals/
+│   ├── App.tsx                # Shell principal com safe-area, Toast e modais
+│   └── index.css              # Tailwind CSS v4 + regras WebView (overflow-x: clip)
+├── capacitor.config.ts        # Configuração Capacitor (webDir: 'dist', androidScheme: 'https')
+├── server.ts                  # Servidor local Express + Vite (opcional para Web/backup em disco)
+├── BUILD_APK.md               # Guia passo a passo para gerar e baixar o APK Android
+└── package.json               # Scripts Web + Capacitor (android:sync, android:open)
 ```
 
 ---
 
-## 💻 Como Rodar o Projeto Localmente
+## 💻 Como Rodar Localmente
 
 ### Pré-requisitos
-- **Node.js** (versão 18 ou superior recomendada)
-- **npm** ou **yarn** ou **bun**
+- **Node.js 20+** (recomendado Node 22)
+- **npm**
 
 ### Passo a Passo
 
-1. **Clone ou baixe o repositório**:
-   ```bash
-   git clone <URL_DO_REPOSITORIO>
-   cd <PASTA_DO_PROJETO>
-   ```
+```bash
+# 1. Instalar dependências
+npm install
 
-2. **Instale as dependências**:
-   ```bash
-   npm install
-   ```
+# 2. Iniciar servidor de desenvolvimento (http://localhost:3000)
+npm run dev
 
-3. **Inicie o servidor de desenvolvimento**:
-   ```bash
-   npm run dev
-   ```
-   > O servidor full-stack Express + Vite iniciará automaticamente na porta `3000`:
-   > **`http://localhost:3000`**
+# 3. Gerar build de produção estático (pasta dist/)
+npm run build
 
-4. **Para rodar em modo de produção (opcional)**:
-   ```bash
-   npm run build
-   npm start
-   ```
+# 4. Rodar build em produção com servidor local
+npm start
+```
 
----
+### Sincronizar com Android (Capacitor)
 
-## 💾 Como Funciona o Backup e a Restauração
+```bash
+# Compila o frontend e sincroniza assets/plugins para android/
+npm run android:sync
 
-### 🔄 Auto-Importação ao Iniciar
-Toda vez que a aplicação é iniciada e acessada no navegador:
-1. O frontend faz uma requisição para a rota `GET /api/backups/latest`.
-2. O servidor lê o diretório `backup/`, identifica o arquivo `.json` mais recente (baseado na data de modificação).
-3. Se existir um backup, o estado completo (jogos, pastas, listas, notas, diário e perfil) é importado automaticamente!
-4. Uma indicação com o nome do arquivo carregado é exibida no modal de Backup.
+# Abre o projeto no Android Studio (opcional)
+npm run android:open
+```
 
-### 📤 Exportar para a pasta `/backup`
-1. No menu superior, clique no botão **Backup**.
-2. Clique em **Exportar para pasta /backup & Download**.
-3. O servidor salva o arquivo diretamente em `backup/backloggd-backup-YYYY-MM-DD-HH-mm-ss.json` e o navegador também baixa uma cópia de segurança.
-4. Qualquer novo backup salvo passa a ser o novo arquivo padrão carregado na próxima inicialização do sistema!
-
----
-
-## 🛠️ Tecnologias Utilizadas
-
-- **React 19** com hooks funcionais e Context API
-- **TypeScript** para tipagem estática e segurança de código
-- **Tailwind CSS v4** para estilização moderna e responsiva
-- **Express + Vite** para ambiente full-stack com suporte a endpoints de API de persistência
-- **Lucide React** para ícones limpos e minimalistas
+Para instruções detalhadas de como gerar e baixar o **APK instalável** automaticamente via **GitHub Actions**, consulte o arquivo [`BUILD_APK.md`](./BUILD_APK.md).
